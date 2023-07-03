@@ -79,20 +79,30 @@ class Test:
             print(f"{self._colors[4]}Run test error:[BrokenPipeError]. Other tests not terminated!{self._colors[3]}")
             return ""
 
-    def create_test_tasks(self) -> None: # create test tasks, tesk num = self._testNum
+    def create_test_tasks(self, parallel:bool = False) -> None: # create test tasks, tesk num = self._testNum
         self._successNum = 0
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            self._results = executor.map(self.__run_test, [test["input"] for test in self._tests])
+        if parallel:
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                self._results = executor.map(self.__run_test, [test["input"] for test in self._tests])
 
-        for test, output in zip(self._tests, self._results):
-            self.__print_test_name()
-            if output == test["expected_output"]:
-                self._successNum += 1
-                print(f'{self._colors[0]}Test passed!{self._colors[3]}')
-            else:
-                print(f'{self._colors[1]}Test failed! input:{test["input"]}, expected_output:{repr(test["expected_output"])}, actual_output:{repr(output)}{self._colors[3]}')
-        
+            for test, output in zip(self._tests, self._results):
+                self.__print_test_name()
+                if output == test["expected_output"]:
+                    self._successNum += 1
+                    print(f'{self._colors[0]}Test passed!{self._colors[3]}')
+                else:
+                    print(f'{self._colors[1]}Test failed! input:{test["input"]}, expected_output:{repr(test["expected_output"])}, actual_output:{repr(output)}{self._colors[3]}')
+        else:
+            for test in self._tests:
+                output = self.__run_test(test)
+                self.__print_test_name()
+                if output == test["expected_output"]:
+                    self._successNum += 1
+                    print(f'{self._colors[0]}Test passed!{self._colors[3]}')
+                else:
+                    print(f'{self._colors[1]}Test failed! input:{test["input"]}, expected_output:{repr(test["expected_output"])}, actual_output:{repr(output)}{self._colors[3]}')
+
         self.__print_test_name()
         print(f'{self._colors[0]}Test finished!{self._colors[3]} Total:{self._testNum}, Success:{self._successNum}, Fail:{self._testNum - self._successNum}{self._colors[3]}')
 
@@ -280,7 +290,7 @@ if __name__ == '__main__':
 
     # create 10 random tasks
     # randomly generated tasks may have poor quality
-    test_store = TestPointStore("./UnitTestExample", 10)
+    test_store = TestPointStore("./UnitTestExample", 100)
     test_store.gen_test()
     test_store.create_test_tasks()
 
