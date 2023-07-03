@@ -14,8 +14,9 @@ class Test:
         self._ErrorRate = ErrorRate # if illegal data is generated, the probability of illegal data generation
         self._weights = [1 - ErrorRate, ErrorRate]
         self._results = None # task results
-        self._colors = [Fore.GREEN, Fore.RED, Fore.BLUE, Style.RESET_ALL] # ANSI color: front_green, front_red, front_blue, front_reset
+        self._colors = [Fore.GREEN, Fore.RED, Fore.BLUE, Style.RESET_ALL, Fore.YELLOW] # ANSI color: front_green, front_red, front_blue, front_reset, front_yellow
         self.__default_tests()
+        self._successNum = 0 # success test num
 
         if not os.path.exists(self._filePath):
             self.__print_test_name()
@@ -42,15 +43,17 @@ class Test:
     def gen_test(self) -> None: # generate special test
         pass
 
-    def __compare_str(self, str1:str, str2:str) -> tuple[bool, list]: # find the difference of str1, str2
+    def compare_str(self, str1:str, str2:str) -> tuple[bool, str]: # find the difference of str1, str2
         if str1 == str2:
             return True, []
         
-        output = []
+        output = ""
         i = 0
         for char1, char2 in zip(str1, str2):
-            if char1 != char2:
-                output.append(i)
+            if char1 == char2:
+                output += char1
+            else:
+                output += f"{self._colors[1]}{char2}{self._colors[3]}"
             i += 1
 
         if i < len(str2):
@@ -61,34 +64,37 @@ class Test:
     def __run_test(self, input_data:list) -> str: # run single test
         p = subprocess.Popen([self._filePath], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
-        for i, item in enumerate(input_data):
-            p.stdin.write((item + '\n').encode())
-            p.stdin.flush()
+        try:
+            for i, item in enumerate(input_data):
+                p.stdin.write((item + '\n').encode())
+                p.stdin.flush()
 
-        _stdout, _ = p.communicate()
+            _stdout, _ = p.communicate()
+            p.stdin.close()
+            p.stdout.close()
 
-        return _stdout.decode()
+            return _stdout.decode()
+        except BrokenPipeError:
+            self.__print_test_name()
+            print(f"{self._colors[4]}Run test error:[BrokenPipeError]. Other tests not terminated!{self._colors[3]}")
+            return ""
 
     def create_test_tasks(self) -> None: # create test tasks, tesk num = self._testNum
+        self._successNum = 0
+
         with concurrent.futures.ThreadPoolExecutor() as executor:
             self._results = executor.map(self.__run_test, [test["input"] for test in self._tests])
 
         for test, output in zip(self._tests, self._results):
             self.__print_test_name()
-            isSame, out = self.__compare_str(test["expected_output"], output)
-            if isSame:
+            if output == test["expected_output"]:
+                self._successNum += 1
                 print(f'{self._colors[0]}Test passed!{self._colors[3]}')
             else:
-                print(f'{self._colors[1]}Test failed!{self._colors[3]} input:{test["input"]}, expected_output:{repr(test["expected_output"])}, actual_output:', end='')
-                
-                # print error char in red color
-                for i, chr in enumerate(output):
-                    if i in out:
-                        print(f"{self._colors[1]}{repr(chr)}{self._colors[3]}", end='')
-                    else:
-                        print(repr(chr), end='')
-                print('')
+                print(f'{self._colors[1]}Test failed! input:{test["input"]}, expected_output:{repr(test["expected_output"])}, actual_output:{repr(output)}{self._colors[3]}')
         
+        self.__print_test_name()
+        print(f'{self._colors[0]}Test finished!{self._colors[3]} Total:{self._testNum}, Success:{self._successNum}, Fail:{self._testNum - self._successNum}{self._colors[3]}')
 
 class TestUnitTest(Test):
     '''
@@ -257,7 +263,7 @@ class TestSellingLand(Test):
 
 
 if __name__ == '__main__':
-    a = TestUnitTest("./UnitTestExample.exe", 5)
+    a = TestUnitTest("./UnitTestExample", 5)
     a.gen_test()
     a.create_test_tasks()
 
@@ -269,14 +275,14 @@ if __name__ == '__main__':
 
     # create default tasks
     # the tasks' details, plz see __default_tests function overloading
-    test_store = TestPointStore("./UnitTestExample.exe", 1)
+    test_store = TestPointStore("./UnitTestExample", 1)
     test_store.create_test_tasks()
 
     # create 10 random tasks
     # randomly generated tasks may have poor quality
-    test_store = TestPointStore("./UnitTestExample.exe", 10)
+    test_store = TestPointStore("./UnitTestExample", 10)
     test_store.gen_test()
     test_store.create_test_tasks()
 
 
-    test_store = TestPointStore("./Unaaample.exe", 10)
+    test_store = TestPointStore("./Unaaample", 10)
