@@ -1,0 +1,3 @@
+/home/jyl/richman_2023/CMakeFiles/richman_2023.dir
+/home/jyl/richman_2023/CMakeFiles/edit_cache.dir
+/home/jyl/richman_2023/CMakeFiles/rebuild_cache.dir
