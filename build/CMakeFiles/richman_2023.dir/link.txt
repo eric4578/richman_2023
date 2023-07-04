@@ -1,3 +1,0 @@
-"D:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E rm -f CMakeFiles\richman_2023.dir/objects.a
-D:\mingw64\bin\ar.exe qc CMakeFiles\richman_2023.dir/objects.a @CMakeFiles\richman_2023.dir\objects1
-D:\mingw64\bin\gcc.exe -g -Wl,--whole-archive CMakeFiles\richman_2023.dir/objects.a -Wl,--no-whole-archive -o C:\Users\26815\Desktop\richman_2023\richman_2023\bin\richman_2023.exe -Wl,--out-implib,C:\Users\26815\Desktop\richman_2023\richman_2023\bin\librichman_2023.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\richman_2023.dir\linkLibs.rsp

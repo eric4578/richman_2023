@@ -11,4 +11,3 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 aux_source_directory(src/ test)
 #aux_source_directory(./ main)
 add_executable(richman_2023  main.c ${test}  )
-

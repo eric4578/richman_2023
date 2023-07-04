@@ -2,7 +2,9 @@
 
 目前测试仅有点数商店测试
 
-**指令：python UnitTest.py [可执行文件位置] [TestCase文件夹位置]**
+## 指令：python UnitTest.py [可执行文件位置] [TestCase文件夹位置]**
+
+如果当前目录在test并且已经编译好项目，直接输入：python UnitTest.py ../bin/richman_2023 ./TestCase/
 
 ## 测试样例编写
 
