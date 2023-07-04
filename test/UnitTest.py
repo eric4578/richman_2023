@@ -351,6 +351,7 @@ def main():
 
     point_store_test = TestPointStore(program_path, 5)
     point_store_test.read_test_case(case_path + "/SingleFunction/PointStore/")
+    # print(point_store_test._tests)
     point_store_test.create_test_tasks(parallel=True, concise=True)
 
 if __name__ == '__main__':
