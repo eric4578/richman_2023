@@ -1,6 +1,6 @@
 CMakeFiles/richman_2023.dir/src/test.c.o: \
- /home/mcx/cproject/richman_2023/src/test.c /usr/include/stdc-predef.h \
- /home/mcx/cproject/richman_2023/./include/test.h /usr/include/stdio.h \
+ /home/lighthouse/richman_2023/src/test.c /usr/include/stdc-predef.h \
+ /home/lighthouse/richman_2023/./include/test.h /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -22,4 +22,5 @@ CMakeFiles/richman_2023.dir/src/test.c.o: \
  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
  /usr/include/x86_64-linux-gnu/bits/floatn.h \
- /usr/include/x86_64-linux-gnu/bits/floatn-common.h
+ /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
+ /home/lighthouse/richman_2023/./include/Player.h

@@ -1,12 +1,32 @@
 [
 {
-  "directory": "/home/mcx/cproject/richman_2023/build",
-  "command": "/usr/bin/gcc  -I/home/mcx/cproject/richman_2023/./include -g -std=gnu11 -o CMakeFiles/richman_2023.dir/main.c.o -c /home/mcx/cproject/richman_2023/main.c",
-  "file": "/home/mcx/cproject/richman_2023/main.c"
+  "directory": "C:/Users/26815/Desktop/richman_2023/richman_2023/build",
+  "command": "D:\\mingw64\\bin\\gcc.exe  @CMakeFiles/richman_2023.dir/includes_C.rsp -g -o CMakeFiles\\richman_2023.dir\\main.c.obj -c C:\\Users\\26815\\Desktop\\richman_2023\\richman_2023\\main.c",
+  "file": "C:/Users/26815/Desktop/richman_2023/richman_2023/main.c"
 },
 {
-  "directory": "/home/mcx/cproject/richman_2023/build",
-  "command": "/usr/bin/gcc  -I/home/mcx/cproject/richman_2023/./include -g -std=gnu11 -o CMakeFiles/richman_2023.dir/src/test.c.o -c /home/mcx/cproject/richman_2023/src/test.c",
-  "file": "/home/mcx/cproject/richman_2023/src/test.c"
+  "directory": "C:/Users/26815/Desktop/richman_2023/richman_2023/build",
+  "command": "D:\\mingw64\\bin\\gcc.exe  @CMakeFiles/richman_2023.dir/includes_C.rsp -g -o CMakeFiles\\richman_2023.dir\\src\\map.c.obj -c C:\\Users\\26815\\Desktop\\richman_2023\\richman_2023\\src\\map.c",
+  "file": "C:/Users/26815/Desktop/richman_2023/richman_2023/src/map.c"
+},
+{
+  "directory": "C:/Users/26815/Desktop/richman_2023/richman_2023/build",
+  "command": "D:\\mingw64\\bin\\gcc.exe  @CMakeFiles/richman_2023.dir/includes_C.rsp -g -o CMakeFiles\\richman_2023.dir\\src\\start.c.obj -c C:\\Users\\26815\\Desktop\\richman_2023\\richman_2023\\src\\start.c",
+  "file": "C:/Users/26815/Desktop/richman_2023/richman_2023/src/start.c"
+},
+{
+  "directory": "C:/Users/26815/Desktop/richman_2023/richman_2023/build",
+  "command": "D:\\mingw64\\bin\\gcc.exe  @CMakeFiles/richman_2023.dir/includes_C.rsp -g -o CMakeFiles\\richman_2023.dir\\src\\test.c.obj -c C:\\Users\\26815\\Desktop\\richman_2023\\richman_2023\\src\\test.c",
+  "file": "C:/Users/26815/Desktop/richman_2023/richman_2023/src/test.c"
+},
+{
+  "directory": "C:/Users/26815/Desktop/richman_2023/richman_2023/build",
+  "command": "D:\\mingw64\\bin\\gcc.exe  @CMakeFiles/richman_2023.dir/includes_C.rsp -g -o CMakeFiles\\richman_2023.dir\\src\\tool.c.obj -c C:\\Users\\26815\\Desktop\\richman_2023\\richman_2023\\src\\tool.c",
+  "file": "C:/Users/26815/Desktop/richman_2023/richman_2023/src/tool.c"
+},
+{
+  "directory": "C:/Users/26815/Desktop/richman_2023/richman_2023/build",
+  "command": "D:\\mingw64\\bin\\gcc.exe  @CMakeFiles/richman_2023.dir/includes_C.rsp -g -o CMakeFiles\\richman_2023.dir\\src\\update.c.obj -c C:\\Users\\26815\\Desktop\\richman_2023\\richman_2023\\src\\update.c",
+  "file": "C:/Users/26815/Desktop/richman_2023/richman_2023/src/update.c"
 }
 ]

@@ -1,6 +1,46 @@
+/*test包含测试函数，即set指令以及dump输出指令*/
 #include"test.h"
-
-int test()
+int setMoney(char*arg2,char*arg3)
 {
-    return 0;
+
+}
+int setPoint(char*arg2,char*arg3)
+{
+
+}
+int setItem(char*arg2,char*arg3,char*arg4)
+{
+
+}
+int setBuff(char*arg2,char*arg3)
+{
+
+}
+int setMap(char*arg2,char*arg3,char*arg4)
+{
+
+}
+int setUnmap(char*arg2)
+{
+
+}
+int setBomb(Player*player,char*arg2)
+{
+
+}
+int setBarrier(Player*player,char*arg2)
+{
+
+}
+int setPos(char*arg2,char*arg3)
+{
+
+}
+int setQuit(char*arg2)
+{
+
+}
+int setStop(char*arg2,char*arg3)
+{
+    
 }

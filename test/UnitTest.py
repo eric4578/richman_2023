@@ -2,7 +2,10 @@ import subprocess
 import concurrent.futures
 import random
 import os
+import sys
+import platform
 from colorama import Fore, Style
+from functools import wraps
 
 class Test:
     def __init__(self, filePath:str, testName:str, testNum: int, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "") -> None:
@@ -16,13 +19,13 @@ class Test:
         self._results = None # task results
         self._testCasePath = TestCasePath
         self._AllCasePath = []
-        self._colors = [Fore.GREEN, Fore.RED, Fore.BLUE, Style.RESET_ALL, Fore.YELLOW] # ANSI color: front_green, front_red, front_blue, front_reset, front_yellow
+        self._colors = [Fore.LIGHTGREEN_EX, Fore.RED, Fore.BLUE, Style.RESET_ALL, Fore.MAGENTA, Fore.CYAN] # ANSI color: front_green, front_red, front_blue, front_reset, front_magenta, front_cyan
         self.__default_tests()
         self._successNum = 0 # success test num
+        self._system = platform.system()
 
         if not os.path.exists(self._filePath):
-            self.__print_test_name()
-            print(f"{self._colors[1]}Fail to open file!{self._colors[3]}")
+            self.__print_error_info(self, "Fail to open file!")
             exit(1)
 
     def set_tests(self, tests:str) -> None: # customize test
@@ -39,15 +42,15 @@ class Test:
     def read_test_case(self, TestCasePath:str = "") -> tuple[bool, int]:
         self._testCasePath = TestCasePath
         if self._testCasePath == "":
-            self.__print_test_name()
-            print(f"{self._colors[1]}read file error!{self._colors[3]}")
+            self.__print_error_info(self, "Path does not exist!")
+            return False, 0
         else:
             self.__read_cases_files(self._testCasePath)
 
             self._tests = []
             already_read = []
             for i in self._AllCasePath:
-                f_dict = {"input":[], "output":""}
+                f_dict = {"input":[], "expected_output":""}
                 file_name, extension = os.path.splitext(i)
 
                 if extension != '.in' and extension != '.out':
@@ -59,12 +62,13 @@ class Test:
                 with open(file_name + '.in', 'r') as in_file:
                     f_dict["input"] = in_file.readlines()
                 with open(file_name + '.out', 'r') as out_file:
-                    f_dict["output"] = ''.join(out_file.readlines())
+                    f_dict["expected_output"] = ''.join(out_file.readlines())
 
                 self._tests.append(f_dict)
                 already_read.append(file_name)
 
             self._testNum = len(self._tests)
+            return True, self._testNum
 
 
     def __default_tests(self) -> None:
@@ -72,8 +76,34 @@ class Test:
             {"input":[], "expected_output":""}
         ]
 
-    def __print_test_name(self, _end='') -> None: # print test name
-        print(f'[{self._colors[2]}{self._testName}{self._colors[3]}]', end=_end)
+    def __print_test_name(_end:str='') -> None: # print test name
+        def _print(print_func):
+            @wraps(print_func)
+            def warp(self, *args, **kwargs):
+                print(f'[{self._colors[2]}{self._testName}{self._colors[3]}]', end=_end)
+                print_func(*args, **kwargs)
+            return warp
+        return _print
+    
+    @__print_test_name()
+    def __print_finish_info(self) -> None:
+        print(f'{self._colors[0]}Test finished!{self._colors[3]} Total:{self._testNum}, Success:{self._successNum}, Fail:{self._testNum - self._successNum}{self._colors[3]}')
+
+    @__print_test_name()
+    def __print_pass_info(self) -> None:
+        print(f'{self._colors[0]}Test passed!{self._colors[3]}')
+
+    @__print_test_name()
+    def __print_fail_info(self, _input:list, _expected:str, _actual:str) -> None:
+        print(f'{self._colors[1]}Test failed! input:{_input}, expected_output:{repr(_expected)}, actual_output:{repr(_actual)}{self._colors[3]}')
+
+    @__print_test_name()
+    def __print_error_info(self, msg:str) -> None:
+        print(f"{self._colors[4]}{msg}{self._colors[3]}")
+
+    @__print_test_name()
+    def __print_warn_info(self, msg:str) -> None:
+        print(f"{self._colors[5]}{msg}{self._colors[3]}")
 
     def __gen_input(self) -> None: # generate special test input
         pass
@@ -116,8 +146,7 @@ class Test:
 
             return _stdout.decode()
         except BrokenPipeError:
-            self.__print_test_name()
-            print(f"{self._colors[4]}Run test error:[BrokenPipeError]. Other tests not terminated!{self._colors[3]}")
+            self.__print_warn_info(self, "Running warn:[BrokenPipeError]. Other tasks not terminated!")
             return ""
 
     def create_test_tasks(self, parallel:bool = False, concise:bool = False) -> None: # create test tasks, tesk num = self._testNum
@@ -127,34 +156,21 @@ class Test:
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 self._results = executor.map(self.__run_test, [test["input"] for test in self._tests])
                 self._results = list(self._results)
-
-            for test, output in zip(self._tests, self._results):
-                self.__print_test_name()
-                if output == test["expected_output"]:
-                    self._successNum += 1
-
-                    if concise:
-                        continue
-
-                    print(f'{self._colors[0]}Test passed!{self._colors[3]}')
-                else:
-                    print(f'{self._colors[1]}Test failed! input:{test["input"]}, expected_output:{repr(test["expected_output"])}, actual_output:{repr(output)}{self._colors[3]}')
         else:
-            for test in self._tests:
-                output = self.__run_test(test["input"])
-                self.__print_test_name()
-                if output == test["expected_output"]:
-                    self._successNum += 1
+            self._results = [self.__run_test(_["input"]) for _ in self._tests]
 
-                    if concise:
-                        continue
+        for test, output in zip(self._tests, self._results):
+            if output == test["expected_output"]:
+                self._successNum += 1
 
-                    print(f'{self._colors[0]}Test passed!{self._colors[3]}')
-                else:
-                    print(f'{self._colors[1]}Test failed! input:{test["input"]}, expected_output:{repr(test["expected_output"])}, actual_output:{repr(output)}{self._colors[3]}')
+                if concise:
+                    continue
+                
+                self.__print_pass_info(self)
+            else:
+                self.__print_fail_info(self, test["input"], test["expected_output"] ,output)
 
-        self.__print_test_name()
-        print(f'{self._colors[0]}Test finished!{self._colors[3]} Total:{self._testNum}, Success:{self._successNum}, Fail:{self._testNum - self._successNum}{self._colors[3]}')
+        self.__print_finish_info(self)
 
 class TestUnitTest(Test):
     '''
@@ -320,29 +336,22 @@ class TestSellingLand(Test):
             {"input":[], "expected_output":""}
         ]
         
+def main():
+    if len(sys.argv) != 3:
+        print('python UnitTest.py main TestCase_dir')
+        return
+    program_path = sys.argv[1]
+    case_path = sys.argv[2]
 
+    os.system("gcc ./UnitTestExample.c -o ./UnitTestExample")
+    _test = TestUnitTest("./UnitTestExample", 3)
+    _test.gen_test()
+    _test.create_test_tasks(parallel=True, concise=True)
+    os.system("rm ./UnitTestExample")
+
+    point_store_test = TestPointStore(program_path, 5)
+    point_store_test.read_test_case(case_path + "/SingleFunction/PointStore/")
+    point_store_test.create_test_tasks(parallel=True, concise=True)
 
 if __name__ == '__main__':
-    a = TestUnitTest("./UnitTestExample.exe", 5)
-    a.gen_test()
-    a.create_test_tasks()
-    # a.read_test_case("./testcase")
-    # print(a._tests)    
-
-    # create default tasks
-    # the tasks' details, plz see __default_tests function overloading
-    test_store = TestPointStore("./UnitTestExample.exe", 1)
-    test_store.create_test_tasks()
-
-    # create 10 random tasks
-    # randomly generated tasks may have poor quality
-    test_store = TestPointStore("./UnitTestExample.exe", 10)
-    test_store.gen_test()
-    # test_store.set_tests([
-    #     {"input":["1", "100", "0", "2", "50", "1", "f", "20", "2"], "expected_output":""},
-    #     {"input":[], "expected_output":""},
-    # ])
-    test_store.create_test_tasks(parallel=True)
-
-    # can't open program
-    test_store = TestPointStore("./Unaaample.exe", 10)
+    main()

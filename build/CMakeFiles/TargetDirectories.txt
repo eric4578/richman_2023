@@ -1,3 +1,3 @@
-/home/mcx/cproject/richman_2023/build/CMakeFiles/richman_2023.dir
-/home/mcx/cproject/richman_2023/build/CMakeFiles/edit_cache.dir
-/home/mcx/cproject/richman_2023/build/CMakeFiles/rebuild_cache.dir
+C:/Users/26815/Desktop/richman_2023/richman_2023/build/CMakeFiles/richman_2023.dir
+C:/Users/26815/Desktop/richman_2023/richman_2023/build/CMakeFiles/edit_cache.dir
+C:/Users/26815/Desktop/richman_2023/richman_2023/build/CMakeFiles/rebuild_cache.dir

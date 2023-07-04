@@ -8,8 +8,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/mcx/cproject/richman_2023/main.c" "CMakeFiles/richman_2023.dir/main.c.o" "gcc" "CMakeFiles/richman_2023.dir/main.c.o.d"
-  "/home/mcx/cproject/richman_2023/src/test.c" "CMakeFiles/richman_2023.dir/src/test.c.o" "gcc" "CMakeFiles/richman_2023.dir/src/test.c.o.d"
+  "C:/Users/26815/Desktop/richman_2023/richman_2023/main.c" "CMakeFiles/richman_2023.dir/main.c.obj" "gcc" "CMakeFiles/richman_2023.dir/main.c.obj.d"
+  "C:/Users/26815/Desktop/richman_2023/richman_2023/src/map.c" "CMakeFiles/richman_2023.dir/src/map.c.obj" "gcc" "CMakeFiles/richman_2023.dir/src/map.c.obj.d"
+  "C:/Users/26815/Desktop/richman_2023/richman_2023/src/start.c" "CMakeFiles/richman_2023.dir/src/start.c.obj" "gcc" "CMakeFiles/richman_2023.dir/src/start.c.obj.d"
+  "C:/Users/26815/Desktop/richman_2023/richman_2023/src/test.c" "CMakeFiles/richman_2023.dir/src/test.c.obj" "gcc" "CMakeFiles/richman_2023.dir/src/test.c.obj.d"
+  "C:/Users/26815/Desktop/richman_2023/richman_2023/src/tool.c" "CMakeFiles/richman_2023.dir/src/tool.c.obj" "gcc" "CMakeFiles/richman_2023.dir/src/tool.c.obj.d"
+  "C:/Users/26815/Desktop/richman_2023/richman_2023/src/update.c" "CMakeFiles/richman_2023.dir/src/update.c.obj" "gcc" "CMakeFiles/richman_2023.dir/src/update.c.obj.d"
   )
 
 # Targets to which this target links.
