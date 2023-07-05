@@ -15,7 +15,7 @@ int main(int argc, char* argv[]){
     }
 
     if (f != NULL){
-        char str[10] = {};
+        char str[100] = {};
         sprintf(str, "%d %d %d\n", a, b, c);
         fputs(str, f);
         fclose(f);

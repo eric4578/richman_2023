@@ -3,16 +3,20 @@ import concurrent.futures
 import random
 import os
 import sys
+import time
 import platform
 from colorama import Fore, Style
 from functools import wraps
+from pathlib import Path
+from alive_progress import alive_bar
 
 
 class Test:
-    def __init__(self, filePath:str, testName:str = "", testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "") -> None:
+    def __init__(self, filePath:str, testName:str = "", testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None) -> None:
         self._tests = []
         self._filePath = filePath
-        self._TestOutPath = filePath + "/TestCase_Print"
+        self._test_gen_path, self.__file_name = os.path.split(self._filePath)
+        self._TestOutPath = self._test_gen_path + "/TestCase_Print"
         self._testName = testName
         self._testNum = testNum # test tasks num
         self._hasIllegal = hasIllegal # whether the program generated illegal data
@@ -25,6 +29,7 @@ class Test:
         self.__default_tests()
         self._successNum = 0 # success test num
         self._system = platform.system()
+        self._DoneFunc = DoneFunc
 
         if not os.path.exists(self._filePath):
             self.__print_error_info(self, "Fail to open file!")
@@ -48,7 +53,7 @@ class Test:
         else:
             if TestCasePath != "":
                 self._testCasePath = TestCasePath
-                
+
             self.__read_cases_files(self._testCasePath)
 
             self._tests = []
@@ -56,7 +61,7 @@ class Test:
             for i in self._AllCasePath:
                 f_dict = {"path":"", "input":[], "expected_output": ""}
                 file_name, extension = os.path.splitext(i)
-
+               
                 if extension != '.in' and extension != '.out':
                     continue
 
@@ -65,12 +70,15 @@ class Test:
 
                 if '_r' in file_name:
                     continue
-                
-                f_dict["path"] = file_name + "_r.out"
-                with open(file_name + '.in', 'r') as in_file:
-                    f_dict["input"] = in_file.readlines()
-                with open(file_name + '.out', 'r') as out_file:
-                    f_dict["expected_output"] = ''.join(out_file.readlines())
+
+                f_dict["path"] = self._TestOutPath + file_name.replace(self._testCasePath, "") + "_r.out"
+                try:
+                    with open(file_name + '.in', 'r') as in_file:
+                        f_dict["input"] = in_file.readlines()
+                    with open(file_name + '.out', 'r') as out_file:
+                        f_dict["expected_output"] = ''.join(out_file.readlines())
+                except FileNotFoundError as err:
+                    self.__print_warn_info(self, f"{err}")
 
                 self._tests.append(f_dict)
                 already_read.append(file_name)
@@ -107,8 +115,11 @@ class Test:
         print(f'{self._colors[0]}Test passed!{self._colors[3]}')
 
     @__print_test_name()
-    def __print_fail_info(self, _input:list, _expected:str, _actual:str) -> None:
-        print(f'{self._colors[1]}Test failed! input:{_input}, expected_output:{repr(_expected)}, actual_output:{repr(_actual)}{self._colors[3]}')
+    def __print_fail_info(self, _input:list, _actual:str, printPath:bool=True) -> None:
+        if printPath:
+            print(f'{self._colors[1]}Test failed! test_case_path:{self._testCasePath}, output_path:{_input["path"]}{self._colors[3]}')
+        else:
+            print(f'{self._colors[1]}Test failed! input:{_input["input"]}, expected_output:{repr(["expected_output"])}, actual_output:{repr(_actual)}{self._colors[3]}')
 
     @__print_test_name()
     def __print_error_info(self, msg:str) -> None:
@@ -147,7 +158,6 @@ class Test:
 
     def __run_test(self, _data:list) -> str: # run single test
         p = subprocess.Popen([self._filePath, _data["path"]], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-
         try:
             for i, item in enumerate(_data["input"]):
                 p.stdin.write((item + '\n').encode())
@@ -158,17 +168,22 @@ class Test:
             p.stdout.close()
 
             _dump_out = ""
-            with open(_data["path"], 'r') as out_obj:
-                _dump_out = ''.join(out_obj.readlines())
+            try:
+                with open(_data["path"], 'r') as out_obj:
+                    _dump_out = ''.join(out_obj.readlines())
+            except FileNotFoundError as err:
+                self.__print_warn_info(self, f"{err}")
 
+            if self._DoneFunc:
+                self._DoneFunc()
+            
             return _dump_out
         except BrokenPipeError:
             self.__print_warn_info(self, "Running warn:[BrokenPipeError]. Other tasks not terminated!")
             return ""
 
-    def create_test_tasks(self, parallel:bool = False, concise:bool = False) -> None: # create test tasks, tesk num = self._testNum
+    def create_test_tasks(self, parallel:bool = False, concise:bool = False, printPath:bool = True) -> None: # create test tasks, tesk num = self._testNum
         self._successNum = 0
-
         if parallel:
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 self._results = executor.map(self.__run_test, [test for test in self._tests])
@@ -185,8 +200,8 @@ class Test:
                 
                 self.__print_pass_info(self)
             else:
-                self.__print_fail_info(self, test["input"], test["expected_output"] ,output)
-
+                self.__print_fail_info(self, test ,output, printPath)
+        
         self.__print_finish_info(self)
 
 
@@ -196,8 +211,8 @@ class TestUnitTest(Test):
     Test whether the unit test module is normal.
     '''
 
-    def __init__(self, filePath:str, testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "") -> None:
-        super().__init__(filePath, "TestUnitTest", testNum, hasIllegal, ErrorRate, TestCasePath)
+    def __init__(self, filePath:str, testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None) -> None:
+        super().__init__(filePath, "TestUnitTest", testNum, hasIllegal, ErrorRate, TestCasePath, DoneFunc)
         self.__default_tests()
         if not hasIllegal:
             self._weights = [1, 0]
@@ -228,8 +243,8 @@ class TestPointStore(Test): # test for point store
     example: input:['1', '50', '0'], expected_output:['已购买路障\n点数不足，退出道具房\n']
     '''
 
-    def __init__(self, filePath:str, testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "") -> None:
-        super().__init__(filePath, "TestPointStore", testNum, hasIllegal, ErrorRate, TestCasePath)
+    def __init__(self, filePath:str, testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None) -> None:
+        super().__init__(filePath, "TestPointStore", testNum, hasIllegal, ErrorRate, TestCasePath, DoneFunc)
         self.__default_tests()
         if not hasIllegal:
             self._weights = [1, 0]
@@ -300,8 +315,8 @@ class TestPointStore(Test): # test for point store
             
 
 class NormalTest(Test):
-    def __init__(self, filePath:str, testName:str="", testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "") -> None:
-        super().__init__(filePath, testName, testNum, hasIllegal, ErrorRate, TestCasePath)
+    def __init__(self, filePath:str, testName:str="", testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None) -> None:
+        super().__init__(filePath, testName, testNum, hasIllegal, ErrorRate, TestCasePath, DoneFunc)
         self.__default_tests()
         if not hasIllegal:
             self._weights = [1, 0]
@@ -313,25 +328,36 @@ class NormalTest(Test):
         ]
 
 
-def _test(path:str) -> None:
+def _test(path:str, DoneFunc = None) -> None:
+    print(f"{Fore.LIGHTCYAN_EX}Running script self check...{Fore.RESET}")
     os.system(f"gcc ./{path}/UnitTestExample/Example.c -o ./{path}/UnitTestExample/Example")
-    _test = TestUnitTest(filePath=f"./{path}/UnitTestExample/Example", testNum=3)
+    _test = TestUnitTest(filePath=f"./{path}/UnitTestExample/Example", testNum=10, DoneFunc=DoneFunc)
     _test.gen_test()
-    _test.create_test_tasks(concise=True)
+    _test.create_test_tasks(parallel=False, concise=True)
+
     _test.read_test_case(TestCasePath=f"./{path}/UnitTestExample")
-    _test.create_test_tasks(concise=True)
-    os.system(f"rm ./{path}/UnitTestExample/Example")
+    _test.create_test_tasks(parallel=False, concise=True)
+    
     os.system(f"rm ./dump.out")
-    os.system(f"rm {_test._testCasePath}/Example_r.out")
+    os.system(f"rm ./{path}/UnitTestExample/Example")
+    os.system(f"rm {_test._testCasePath}/TestCase_Print/Example1_r.out")
+    os.system(f"rm {_test._testCasePath}/TestCase_Print/Example2_r.out")
+    
+    print(f"{Fore.LIGHTCYAN_EX}Finished.{Fore.RESET}")
 
 
-def SingleCommandTest(program_path:str, case_path:str) -> None:
+def SingleCommandTest(program_path:str, case_path:str, DoneFunc = None) -> None:
+    print(f"{Fore.LIGHTCYAN_EX}Running single command test...{Fore.RESET}")
     _path = f"{case_path}/SingleCommand/"
     test_content = {"dump": "TestDump", "init": "TestInit", "set": "TestSet", "step": "TestStep", }
     for key, value in test_content.items():
-        test_content[key] = NormalTest(filePath=program_path, testName=value, TestCasePath=_path + key)
+        test_content[key] = NormalTest(filePath=program_path, testName=value, TestCasePath=_path + key, DoneFunc=DoneFunc)
         test_content[key].read_test_case()
 
+    for key, value in test_content.items():
+        value.create_test_tasks(parallel=False, concise=True, printPath=True)
+
+    print(f"{Fore.LIGHTCYAN_EX}Finished.{Fore.RESET}")
 
         
 def main():
@@ -341,9 +367,9 @@ def main():
     program_path = sys.argv[1]
     case_path = sys.argv[2][:-1] if sys.argv[2].endswith('/') else sys.argv[2]
 
-    _test(case_path)
-
-    SingleCommandTest(program_path=program_path, case_path=case_path)
+    with alive_bar(total=42, title="total progress") as bar:
+        _test(case_path, bar)
+        SingleCommandTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
     
 
 if __name__ == '__main__':
