@@ -153,7 +153,7 @@ int main() {
                 printf("no robot\n");
             }
         }
-        else if (strcmp(action, "block") == 0)
+        else if (strcmp(action, "bomb") == 0)
         {
             int num=atoi(arg1);
             if(players[prid].toolnum[BOMB]>0)
