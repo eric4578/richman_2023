@@ -1,5 +1,6 @@
 #include "update.h"
 #include "map.h"
+#include "func.h"
 #include <stdlib.h>
 #include<stdio.h>
 #include<time.h>
