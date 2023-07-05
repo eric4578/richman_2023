@@ -3,7 +3,6 @@
 int buyTool(Player* player)
 {
     char ch=' ';
-<<<<<<< HEAD
     int i=0;//一次性测试用
     //printf("欢迎来到道具屋，请选择你需要的道具:");
     while (ch!='F'&&ch!='f')
@@ -27,12 +26,6 @@ int buyTool(Player* player)
         // fgets(input, sizeof(input), stdin);
         // i=0;
 
-=======
-    //printf("欢迎来到道具屋，请选择你需要的道具:");
-    while (ch!='F'&&ch!='f')
-    {
-        /*可以购买多个的代码*/
->>>>>>> aed0620babbca38c9c04f0cdceb275b2ae2fab08
         /*点数不足*/
         if(player->points<30)
         {
@@ -43,20 +36,10 @@ int buyTool(Player* player)
         else if(ch=='F'||ch=='f') break;
         /*购买单件*/
         else 
-<<<<<<< HEAD
         {   if(i>=1) return 0;
             buy_one_tool(player,ch);
         }
         i++;
-=======
-        {   
-            scanf("%c", &ch);
-            char input[100];
-            fgets(input, sizeof(input), stdin);
-
-            buy_one_tool(player,ch);
-        }
->>>>>>> aed0620babbca38c9c04f0cdceb275b2ae2fab08
     }
     printf("退出道具房\n");
     return 0;
