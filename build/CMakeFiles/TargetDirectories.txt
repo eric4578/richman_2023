@@ -1,3 +1,0 @@
-/home/lighthouse/richman_2023/build/CMakeFiles/richman_2023.dir
-/home/lighthouse/richman_2023/build/CMakeFiles/edit_cache.dir
-/home/lighthouse/richman_2023/build/CMakeFiles/rebuild_cache.dir
