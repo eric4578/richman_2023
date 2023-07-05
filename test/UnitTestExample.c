@@ -1,5 +1,4 @@
-#include <stdio.h>
-
+#include"tool.h"
 int main(){
     int a, b, c;
     scanf("%d", &a);
@@ -8,5 +7,9 @@ int main(){
     printf("%d\n", b);
     scanf("%d", &c);
     printf("%d\n", c);
+    Player *player;
+    player->points=b;
+    player->toolnum[0]=c;
+    buy_one_tool(player,a);
     return 0;
 }

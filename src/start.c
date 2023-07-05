@@ -1,4 +1,5 @@
 #include "start.h"
+<<<<<<< HEAD
 
 /*游戏一开始最先调用的函数*/
 Player* start()
@@ -14,11 +15,28 @@ Player* start()
     }
     set_init_fund(player,fund);
     return player;
+=======
+#include"global.h"
+/*游戏一开始最先调用的函数*/
+int start(Player*players)
+{
+    char s[5] = "\0";
+    int flag=-1;
+    int fund = get_set_fund();
+    printf("请输入角色：\n");
+    while(flag==-1){//输入错误会让重输
+        scanf("%s", s);
+        flag=set_init_role(players,s);
+    }
+    set_init_fund(players,fund);
+    
+>>>>>>> aed0620babbca38c9c04f0cdceb275b2ae2fab08
 }
 
 /*设置初始资金*/
 void set_init_fund(Player *player, int fund)
 {
+<<<<<<< HEAD
     int id=player->id;
     do{
         player->fund=fund;
@@ -28,6 +46,19 @@ void set_init_fund(Player *player, int fund)
 
 /*设置初始角色，传入一组数字字符,返回角色指针*/
 Player *set_init_role(char *s)
+=======
+    for(int i=0;i<MAX_PLAYER_NUM;i++)
+    {
+        if(player[i].alive==1)
+        {
+            (player+i)->fund=fund;
+        }
+    }
+}
+
+/*设置初始角色，传入一组数字字符,返回角色指针*/
+int set_init_role(Player*players,char*s)
+>>>>>>> aed0620babbca38c9c04f0cdceb275b2ae2fab08
 {
     // isdigital
     char *c = s;
@@ -36,7 +67,11 @@ Player *set_init_role(char *s)
         if (!isdigit(*c))
         {
             printf("非法输入\n");
+<<<<<<< HEAD
             return NULL;
+=======
+            return -1;
+>>>>>>> aed0620babbca38c9c04f0cdceb275b2ae2fab08
         }
         c++;
     }
@@ -45,6 +80,7 @@ Player *set_init_role(char *s)
     if (num < 2 || num > 4)
     {
         printf("玩家必须要2-4人\n");
+<<<<<<< HEAD
         return NULL;
     }
     // 设置role,构建循环链表
@@ -66,6 +102,39 @@ Player *set_init_role(char *s)
         }
         return player;
     }
+=======
+        return -1;
+    }
+    else{
+        PlayerNumber=num;
+        for(int i=0;i<MAX_PLAYER_NUM;i++)
+        {
+            int id=*(s)-'0';
+            if(id-1!=i) {(players+i)->alive=0;}
+            else {initPlayer((players+i),id);s++;}
+        }
+        return 0;
+    }
+    // 设置role,构建循环链表
+    // else
+    // {
+    //     PlayerNumber=num;
+    //     Player *player = (Player *)malloc(sizeof(Player));
+    //     player->next = player;
+    //     initPlayer(player, (*s) - '0');
+    //     Player *p = player, *q = NULL;
+    //     for (int i = 0; i < num - 1; i++)
+    //     {
+    //         q = (Player *)malloc(sizeof(Player));
+    //         q->next = p->next;
+    //         p->next = q;
+    //         p=q;
+    //         initPlayer(q, *(++s) - '0');
+            
+    //     }
+    //     return player;
+    // }
+>>>>>>> aed0620babbca38c9c04f0cdceb275b2ae2fab08
 }
 
 /*初始化player参数的函数，为了以后方便添加做的*/
@@ -74,6 +143,15 @@ void initPlayer(Player *player, int id)
     player->id = id;
     player->points = 0;
     player->fund=0;
+<<<<<<< HEAD
+=======
+    player->buff=0;
+    player->alive=1;
+    player->stop=0;
+    player->loc=0;
+    for(int i=0;i<MAX_MAP_NUM;i++)
+        player->house[i]=-1;
+>>>>>>> aed0620babbca38c9c04f0cdceb275b2ae2fab08
     for (int i = 0; i < 4; i++)
         player->toolnum[i] = 0;
 }
@@ -85,7 +163,11 @@ int get_set_fund()
 
     while (1)
     {
+<<<<<<< HEAD
         //printf("设置初始资金");
+=======
+        printf("设置初始资金");
+>>>>>>> aed0620babbca38c9c04f0cdceb275b2ae2fab08
         fflush(stdout);
 
         char input[100];
@@ -114,6 +196,7 @@ int get_set_fund()
             printf("输入不符合要求，请重新输入。\n");
         }
     }
+<<<<<<< HEAD
     return 0;
 }
 
@@ -127,4 +210,12 @@ void freePlayer(Player*p)
         free(p);
         p=q;
     }
+=======
+    return num;
+}
+
+int getPlayerNumber()
+{
+    return PlayerNumber;//返回静态变量
+>>>>>>> aed0620babbca38c9c04f0cdceb275b2ae2fab08
 }
