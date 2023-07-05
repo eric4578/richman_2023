@@ -1,12 +1,48 @@
 #include "update.h"
-#include "Player.h"
+#include "map.h"
 #include <stdlib.h>
 #include<stdio.h>
 #include<time.h>
+#include<string.h>
+extern mapnode map[MAX_MAP_NUM];
 /*step函数*/
 int step(Player*player,int step)
 {
-    //TODO
+    int i=0,flag=0;
+    //更新旧节点的用户表
+    while (i<4)
+    {
+        if(map[player->loc].user[i]==getPlayerch(player->id))
+        {
+            flag=1;
+        }
+        if(flag)
+        {
+            if(i<3)
+            map[player->loc].user[i]=map[player->loc].user[i+1];
+            else
+            map[player->loc].user[i]='0';
+        }
+        i++;
+    }
+    updateMapNode(player->loc);
+    //更新新节点的用户表
+    player->loc+=step;
+    i=3;
+    while (i>0)
+    {
+        map[player->loc].user[i]=map[player->loc].user[i-1];
+        i--;
+    }
+    map[player->loc].user[0]=getPlayerch(player->id);
+    //特殊事件
+    if(player->loc==PRISON)
+    {
+        //TODO
+    }
+    //判断新地是否有主,有则询问是否购买
+    buyLand(player, player->loc); 
+    updateMapNode(player->loc);
     return 0;
 }
 
@@ -44,9 +80,3 @@ int get_roll_number()
 }
 
 
-/*change Player*/
-Player* changePlayer(Player*player)
-{
-    player=player->next;
-    printf("%s>待输入命令\n",player->name);
-}

@@ -16,3 +16,5 @@ main函数：main.c
 输入玩家：【1234】
 
 step n //待完善，目前只能实现走路和很简单购买功能
+
+![Alt text](image.png)

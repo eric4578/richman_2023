@@ -7,5 +7,5 @@ cmake_install.cmake
 Makefile
 /cmake-build-debug
 /camke-build-debug-wsl
-/CMakeFiles
+/build
 /bin

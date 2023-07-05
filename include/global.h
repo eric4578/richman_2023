@@ -27,5 +27,10 @@
 #define MAGENTA (5)
 #define CYAN    (6)
 #define RESET   (7)
-
+#define OK 0
+#define ERROR -1
+#define LEVEL0 0
+#define LEVEL1 1
+#define LEVEL2 2
+#define LEVEL3 3
 #endif
