@@ -5,4 +5,7 @@
 #include "Player.h"
 int buyLand(Player* player, int index) ;
 int sellLand(Player* player, int index) ;
+
+void help();
+void quit();
 #endif

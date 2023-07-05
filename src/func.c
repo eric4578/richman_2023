@@ -107,3 +107,12 @@ int sellLand(Player* player, int index) {
     }
     return OK;
 }
+
+void help(){
+    printf("这里显示帮助\n");
+    // TODO: 定义常量的输出字符串
+}
+
+void quit(){
+    printf("退出游戏\n");
+}
