@@ -175,3 +175,35 @@ int getcolor(char ch)
     }
 }
 
+int get_Mine_points(int index)
+{
+    switch (index)
+    {
+    case 69:
+        return 20;
+        break;
+    
+    case 68:
+        return 80;
+        break;
+
+    case 67:
+        return 100;
+        break;
+    
+    case 66:
+        return 40;
+        break;
+    
+    case 65:
+        return 80;
+        break;
+    
+    case 64:
+        return 60;
+        break;
+    default:
+        return 0;
+        break;
+    }
+}

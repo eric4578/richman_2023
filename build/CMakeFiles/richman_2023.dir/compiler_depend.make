@@ -262,7 +262,8 @@ CMakeFiles/richman_2023.dir/src/tool.c.o: ../src/tool.c \
   /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
   /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
   /usr/include/x86_64-linux-gnu/bits/floatn.h \
-  /usr/include/x86_64-linux-gnu/bits/floatn-common.h
+  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
+  ../include/map.h
 
 CMakeFiles/richman_2023.dir/src/update.c.o: ../src/update.c \
   /usr/include/stdc-predef.h \
@@ -329,7 +330,10 @@ CMakeFiles/richman_2023.dir/src/update.c.o: ../src/update.c \
   /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
   /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
   /usr/include/string.h \
-  /usr/include/strings.h
+  /usr/include/strings.h \
+  ../include/tool.h \
+  ../include/func.h \
+  ../include/map.h
 
 
 /usr/include/x86_64-linux-gnu/bits/time.h:

@@ -21,11 +21,10 @@ int main() {
     for(i=0;i<PlayerNumber;i++)
     {
         if(players[i].alive==1)
-            map[0].user[j++]=getPlayerch(players[i].id);
+        map[0].user[j++]=getPlayerch(players[i].id);
     }
     updateMapNode(0);
     //buyTool(player);
-
     /*接受指令的变量*/
     char command[100];
     char action[20];
@@ -42,10 +41,17 @@ int main() {
             prid=(prid+1)%PlayerNumber;
             continue;
         }
+        /*更新角色状态*/
+        if(players[prid].stop>0){
+            updatePlayer(players+prid);
+            prid=(prid+1)%PlayerNumber;
+            continue;
+        }
+        updatePlayer(players+prid);//进行buff，stop的更新
 
         /*打印地图*/
         printMap();
-
+        action[0]='\0';
         /*指令输入*/
         printf("输入用户命令\n");
         
@@ -112,10 +118,10 @@ int main() {
         } 
         else if (strcmp(action, "step") == 0) {//step指令
             step((players+prid),atoi(arg1));
-            prid=(prid+1)%MAX_PLAYER_NUM;
+            prid=(prid+1)%PlayerNumber;
             //清空缓冲区
-            char input[20];
-            fgets(input, sizeof(input), stdin);  
+            // char input[20];
+            // fgets(input, sizeof(input), stdin);  
             continue;
         }
 
@@ -126,8 +132,8 @@ int main() {
             step((players+prid),rollNumber);
             prid=(prid+1)%PlayerNumber;
             //清空缓冲区
-            char input[20];
-            fgets(input, sizeof(input), stdin);  
+            // char input[20];
+            // fgets(input, sizeof(input), stdin);  
             continue;
         } 
         else if(strcmp(action, "sell") == 0)

@@ -99,7 +99,7 @@ int sellLand(Player* player, int index) {
     }
     else {
         //玩家出售地块，玩家资产更新，拥有地块更新，地块属性更新
-        player->fund += map[index].price * (map[index].level + 1);
+        player->fund += map[index].price * (map[index].level + 1)*2;
         //todo: 等待最后确认house初始化内容
         player->house[index] = -1;
         map[index].whose = 0;

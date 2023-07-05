@@ -21,5 +21,6 @@ int printNode(mapnode node);
 int initMap();
 int printMap();
 int getcolor(char ch);
+int get_Mine_points(int index);
 int updateMapNode(int index);
 #endif

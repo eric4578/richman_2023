@@ -4,12 +4,41 @@
 #include<stdio.h>
 #include<time.h>
 #include<string.h>
+#include"tool.h"
+#include"func.h"
 extern mapnode map[MAX_MAP_NUM];
+extern Player players[MAX_PLAYER_NUM];
+
 /*step函数*/
 int step(Player*player,int step)
 {
     int i=0,flag=0;
+    step=step%MAX_MAP_NUM;
+    //有没有道具
+    for(i=1;i<=step;i++)
+    {
+        flag=((player->loc)+i)%MAX_MAP_NUM;
+        if(map[flag].item[1]||map[flag].item[3])
+        {
+            if(map[flag].item[1])
+                flag=solve_Bomb(player,flag);//处理炸弹
+            else
+                flag=solve_Block(player,flag);//处理障碍
+            break;
+        }
+        flag=0;
+    }
+    if(flag==1) {
+        printf("被阻\n");
+        step=i;
+    }
+    else if(flag==3) {
+        printf("被炸，进医院\n");
+        step=HOSPITAL-(player->loc);//可以为负数
+    }
+    
     //更新旧节点的用户表
+    i=0,flag=0;
     while (i<4)
     {
         if(map[player->loc].user[i]==getPlayerch(player->id))
@@ -27,7 +56,7 @@ int step(Player*player,int step)
     }
     updateMapNode(player->loc);
     //更新新节点的用户表
-    player->loc+=step;
+    player->loc=(player->loc+step)%MAX_MAP_NUM;
     i=3;
     while (i>0)
     {
@@ -35,15 +64,59 @@ int step(Player*player,int step)
         i--;
     }
     map[player->loc].user[0]=getPlayerch(player->id);
-    //特殊事件
+    //判断是否为监狱
     if(player->loc==PRISON)
     {
-        //TODO
+        printf("进入监狱\n");
+        player->stop=2;
+    }
+    else if(player->loc==GIFTROOM)
+    {
+        printf("giftroom\n");
+        //getGift(player);//todo
+    }
+    //是否为道具屋
+    else if(player->loc==TOOLROOM)
+    {
+        buyTool(player);
+    }
+    //是否为魔法屋
+    else if(player->loc==MAGICROOM)
+    {
+        printf("进入魔法屋\n");
+        //useMagic(player);//TODO,magic room
+    }
+    //是否为矿地
+    else if(player->loc<MAX_MAP_NUM&&player->loc>=(MAX_MAP_NUM-6))
+    {
+        int point=get_Mine_points(player->loc);
+        player->points+=point;
+        printf("进入矿地获得点数：%d\n",point);
+    }
+    //是否交租金
+    if(map[player->loc].whose!=0&&map[player->loc].whose!=player->id)
+    {
+        payRent(player->id,map[player->loc].whose);//支付租金，金额转移
     }
     //判断新地是否有主,有则询问是否购买
     buyLand(player, player->loc); 
     updateMapNode(player->loc);
     return 0;
+}
+
+/*更新角色状态*/
+int updatePlayer(Player*player)
+{
+    if(player->buff>0)
+    {
+        player->buff-=1;
+        printf("剩余buff:%d\n",player->buff);
+    }
+    if(player->stop>0)
+    {
+        player->stop-=1;
+        printf("轮空：剩余%d轮\n",player->stop);
+    }
 }
 
 /*put block in [-10,10],and not in player*/
@@ -63,6 +136,7 @@ int robotClear(Player*player)
 /*put bomb in [-10,10],and not in player and hospital*/
 int putBomb(Player*player,int num)
 {
+    //todo
     return 0;
 }
 
@@ -70,13 +144,45 @@ int putBomb(Player*player,int num)
 /*生成随机数的函数*/
 int get_roll_number()
 {
-
     // 设置随机数生成器的种子为当前时间
     srand(time(NULL));
-
     // 生成随机数并打印
     return 1 + rand() % 6;
+}
 
+/*支付租金,输入玩家id*/
+int payRent(int from,int to)
+{
+    for(int i;i<MAX_PLAYER_NUM;i++)
+    {
+        if(players[i].id==from)
+        {
+            from=i;
+        }
+        if(players[i].id==to)
+        {
+            to=i;
+        }
+    }
+    if(players[from].buff<=0)//无buff
+    {
+        int index=players->loc;
+        int rent=(int)(map[index].price * (map[index].level + 1)/2);
+        if(players[from].fund>=rent&&players[to].stop==0)//支付租金 
+        {
+            printf("支付%d租金给%s\n",rent,NAME_FROM_ID[players[to].id]);
+            players[from].fund-=rent;
+            players[to].fund+=rent;
+        }
+        else//玩家破产
+        {
+            //TODO
+        }
+    }
+    else
+    {
+        printf("财神保佑，免付租金\n");
+    }
 }
 
 

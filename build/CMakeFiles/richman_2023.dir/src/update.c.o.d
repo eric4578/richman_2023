@@ -56,4 +56,7 @@ CMakeFiles/richman_2023.dir/src/update.c.o: \
  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
- /usr/include/string.h /usr/include/strings.h
+ /usr/include/string.h /usr/include/strings.h \
+ /home/lighthouse/richman_2023/./include/tool.h \
+ /home/lighthouse/richman_2023/./include/func.h \
+ /home/lighthouse/richman_2023/./include/map.h
