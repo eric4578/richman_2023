@@ -11,6 +11,7 @@ class Test:
     def __init__(self, filePath:str, testName:str, testNum: int, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "") -> None:
         self._tests = []
         self._filePath = filePath
+        self._TestOutPath = filePath + "/TestCase_Print"
         self._testName = testName
         self._testNum = testNum # test tasks num
         self._hasIllegal = hasIllegal # whether the program generated illegal data
@@ -50,7 +51,7 @@ class Test:
             self._tests = []
             already_read = []
             for i in self._AllCasePath:
-                f_dict = {"input":[], "expected_output":""}
+                f_dict = {"path":"", "input":[], "expected_output": ""}
                 file_name, extension = os.path.splitext(i)
 
                 if extension != '.in' and extension != '.out':
@@ -73,7 +74,7 @@ class Test:
 
     def __default_tests(self) -> None:
         self._tests = [
-            {"input":[], "expected_output":""}
+            {"path":"", "input":[], "expected_output":""}
         ]
 
     def __print_test_name(_end:str='') -> None: # print test name
@@ -188,7 +189,7 @@ class TestUnitTest(Test):
     
     def __default_tests(self) -> None:
         self._tests = [
-            {"input":["1", "50", "0"], "expected_output": "1\n50\n0\n"},
+            {"path":"", "input":["1", "50", "0"], "expected_output": "1\n50\n0\n"},
         ]
 
     def gen_test(self) -> None:
@@ -199,7 +200,7 @@ class TestUnitTest(Test):
             rintb = str(random.randint(1, 10))
             rintc = str(random.randint(1, 10))
             self._tests.append({})
-            self._tests[i] = {"input": [rinta, rintb, rintc], "expected_output": rinta + '\n' + rintb + '\n' + rintc + '\n'}
+            self._tests[i] = {"path":"", "input": [rinta, rintb, rintc], "expected_output": rinta + '\n' + rintb + '\n' + rintc + '\n'}
 
 
 
@@ -220,7 +221,7 @@ class TestPointStore(Test): # test for point store
 
     def __default_tests(self) -> None:
         self._tests = [
-            {"input":["1", "50", "0"], "expected_output":"已购买路障\n点数不足，退出道具房\n"},
+            {"path":"", "input":["1", "50", "0"], "expected_output":"已购买路障\n点数不足，退出道具房\n"},
         ]
     
     def gen_test(self) -> None: # generate special test
@@ -255,6 +256,7 @@ class TestPointStore(Test): # test for point store
             tools_number = random.randint(*tools_num_range)
 
             self._tests[i]["input"] = [input, str(points), str(tools_number)]
+            self._tests[i]["path"] = ""
     
     def __gen_expected_output(self) -> None:
         self._point = [50, 30, 50]
@@ -291,7 +293,7 @@ class TestDice(Test):
 
     def __default_tests(self) -> None:
         self._tests = [
-            {"input":[], "expected_output":""}
+            {"path":"", "input":[], "expected_output":""}
         ]
 
 
@@ -305,7 +307,7 @@ class TestMap(Test):
 
     def __default_tests(self) -> None:
         self._tests = [
-            {"input":[], "expected_output":""}
+            {"path":"", "input":[], "expected_output":""}
         ]
 
 
@@ -319,7 +321,7 @@ class TestBuyLand(Test):
 
     def __default_tests(self) -> None:
         self._tests = [
-            {"input":[], "expected_output":""}
+            {"path":"", "input":[], "expected_output":""}
         ]
 
 
@@ -333,7 +335,7 @@ class TestSellingLand(Test):
 
     def __default_tests(self) -> None:
         self._tests = [
-            {"input":[], "expected_output":""}
+            {"path":"", "input":[], "expected_output":""}
         ]
         
 def main():
