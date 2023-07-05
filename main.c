@@ -87,19 +87,15 @@ int main() {
             }
             else if(strcmp(arg1,"bomb")==0)
             {
-                setBomb(players,arg2);
+                setBomb(arg2);
             }
             else if(strcmp(arg1,"barrier")==0)
             {
-                setBarrier(players,arg2);
+                setBarrier(arg2);
             }
             else if(strcmp(arg1,"pos")==0)
             {
                 setPos(arg2,arg3);
-            }
-            else if(strcmp(arg1,"quit")==0)
-            {
-                setQuit(arg2);
             }
             else if(strcmp(arg1,"stop")==0)
             {
@@ -168,6 +164,12 @@ int main() {
             {
                 printf("no bomb\n");
             }
+        }
+        else if (strcmp(action, "quit") == 0){
+            quit();
+        }
+        else if (strcmp(action, "help") == 0 ){
+            help();
         }
         else 
         {
