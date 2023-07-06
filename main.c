@@ -176,6 +176,10 @@ int main() {
                 printf("no bomb\n");
             }
         }
+        else if (strcmp(action, "dump") == 0)
+        {
+            dump_file(players);
+        }
         else if(strcmp(action, "quit") == 0)
         {
             break;

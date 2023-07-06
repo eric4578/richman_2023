@@ -190,3 +190,7 @@ int payRent(int from,int to)
 }
 
 
+// int getGift(Player*player)
+// {
+
+// }

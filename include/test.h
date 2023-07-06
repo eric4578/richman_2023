@@ -11,3 +11,7 @@ int setBarrier(Player*player,char*arg2);
 int setPos(char*arg2,char*arg3);
 int setQuit(char*arg2);
 int setStop(char*arg2,char*arg3);
+int Dump_One_Player(Player *p);
+int Dump_Line(char * line,int line_num);
+int dump_file(Player* p);
+int Dump_line_overload();
