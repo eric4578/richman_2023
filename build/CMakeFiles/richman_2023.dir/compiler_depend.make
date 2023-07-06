@@ -234,7 +234,10 @@ CMakeFiles/richman_2023.dir/src/test.c.o: ../src/test.c \
   ../include/Player.h \
   ../include/global.h \
   ../include/map.h \
-  ../include/Player.h
+  /usr/include/string.h \
+  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
+  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
+  /usr/include/strings.h
 
 CMakeFiles/richman_2023.dir/src/tool.c.o: ../src/tool.c \
   /usr/include/stdc-predef.h \

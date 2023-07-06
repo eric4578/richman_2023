@@ -1,3 +1,6 @@
+#ifndef TEST_H
+#define TEST_H
+
 #include<stdio.h>
 #include"Player.h"
 int setMoney(char*arg2,char*arg3);
@@ -11,7 +14,8 @@ int setBarrier(Player*player,char*arg2);
 int setPos(char*arg2,char*arg3);
 int setQuit(char*arg2);
 int setStop(char*arg2,char*arg3);
-int Dump_One_Player(Player *p);
-int Dump_Line(char * line,int line_num);
-int dump_file(Player* p);
+int Dump_One_Player(Player *p,char*file_path);
+int Dump_Line(char * line,int line_num,char*file_path);
+int dump_file(Player* p,char*file_path);
 int Dump_line_overload();
+#endif

@@ -9,7 +9,7 @@
 #define BOMB 3
 extern mapnode map[MAX_MAP_NUM];//地图
 Player players[MAX_PLAYER_NUM]; //玩家
-int main() {
+int main(int argc,char*argv[]) {
     /*游戏初始化*/
     initMap();
     //printMap();
@@ -178,7 +178,10 @@ int main() {
         }
         else if (strcmp(action, "dump") == 0)
         {
-            dump_file(players);
+            if(argc>=2)
+                dump_file(players,argv[1]);
+            else 
+                dump_file(players,"../bin/dump.out");
         }
         else if(strcmp(action, "quit") == 0)
         {
