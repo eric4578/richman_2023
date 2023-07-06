@@ -41,6 +41,11 @@ int set_init_role(Player*players,char*s)
         }
         c++;
     }
+    if(!isUniqueChars(s)) 
+    {
+        printf("非法输入\n");
+        return -1;
+    }
     // num is not in [2,4]
     int num = strlen(s);
     if (num < 2 || num > 4)
@@ -59,25 +64,21 @@ int set_init_role(Player*players,char*s)
         }
         return 0;
     }
-    // 设置role,构建循环链表
-    // else
-    // {
-    //     PlayerNumber=num;
-    //     Player *player = (Player *)malloc(sizeof(Player));
-    //     player->next = player;
-    //     initPlayer(player, (*s) - '0');
-    //     Player *p = player, *q = NULL;
-    //     for (int i = 0; i < num - 1; i++)
-    //     {
-    //         q = (Player *)malloc(sizeof(Player));
-    //         q->next = p->next;
-    //         p->next = q;
-    //         p=q;
-    //         initPlayer(q, *(++s) - '0');
-            
-    //     }
-    //     return player;
-    // }
+}
+
+/*判断各不相同*/
+int isUniqueChars(char *str) {
+    int length = strlen(str);
+    
+    for (int i = 0; i < length - 1; i++) {
+        for (int j = i + 1; j < length; j++) {
+            if (str[i] == str[j]) {
+                return 0; // 如果有相同的字符，返回0表示不唯一
+            }
+        }
+    }
+    
+    return 1; // 如果没有相同的字符，返回1表示唯一
 }
 
 /*初始化player参数的函数，为了以后方便添加做的*/

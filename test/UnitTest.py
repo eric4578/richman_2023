@@ -2,37 +2,132 @@ import subprocess
 import concurrent.futures
 import random
 import os
+import sys
+import time
+import platform
 from colorama import Fore, Style
+from functools import wraps
+from pathlib import Path
+from alive_progress import alive_bar
+
 
 class Test:
-    def __init__(self, filePath:str, testName:str, testNum: int, hasIllegal:bool = False, ErrorRate:float = 0.05) -> None:
+    def __init__(self, filePath:str, testName:str = "", testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None) -> None:
         self._tests = []
         self._filePath = filePath
+        self._test_gen_path, self.__file_name = os.path.split(self._filePath)
+        self._TestOutPath = self._test_gen_path + "/TestCase_Print"
         self._testName = testName
         self._testNum = testNum # test tasks num
         self._hasIllegal = hasIllegal # whether the program generated illegal data
         self._ErrorRate = ErrorRate # if illegal data is generated, the probability of illegal data generation
         self._weights = [1 - ErrorRate, ErrorRate]
         self._results = None # task results
-        self._colors = [Fore.GREEN, Fore.RED, Fore.BLUE, Style.RESET_ALL, Fore.YELLOW] # ANSI color: front_green, front_red, front_blue, front_reset, front_yellow
+        self._testCasePath = TestCasePath
+        self._AllCasePath = []
+        self._colors = [Fore.LIGHTGREEN_EX, Fore.RED, Fore.BLUE, Style.RESET_ALL, Fore.MAGENTA, Fore.CYAN] # ANSI color: front_green, front_red, front_blue, front_reset, front_magenta, front_cyan
         self.__default_tests()
         self._successNum = 0 # success test num
+        self._system = platform.system()
+        self._DoneFunc = DoneFunc
 
         if not os.path.exists(self._filePath):
-            self.__print_test_name()
-            print(f"{self._colors[1]}Fail to open file!{self._colors[3]}")
+            self.__print_error_info(self, "Fail to open file!")
             exit(1)
 
     def set_tests(self, tests:str) -> None: # customize test
         self._tests = tests
+    
+    def __read_cases_files(self, _path:str):
+        for file in os.listdir(_path):
+            file_path = os.path.join(_path, file)
+            if os.path.isdir(file_path):
+                self.__read_cases_files(file_path)
+            else:
+                self._AllCasePath.append(file_path)
+
+    def read_test_case(self, TestCasePath:str = "") -> tuple[bool, int]:
+        if self._testCasePath == "" and TestCasePath == "":
+            self.__print_error_info(self, "Path does not exist!")
+            return False, 0
+        else:
+            if TestCasePath != "":
+                self._testCasePath = TestCasePath
+
+            self.__read_cases_files(self._testCasePath)
+
+            self._tests = []
+            already_read = []
+            for i in self._AllCasePath:
+                f_dict = {"path":"", "input":[], "expected_output": ""}
+                file_name, extension = os.path.splitext(i)
+               
+                if extension != '.in' and extension != '.out':
+                    continue
+
+                if file_name in already_read:
+                    continue
+
+                if '_r' in file_name:
+                    continue
+
+                f_dict["path"] = self._TestOutPath + file_name.replace(self._testCasePath, "") + "_r.out"
+                try:
+                    with open(file_name + '.in', 'r') as in_file:
+                        f_dict["input"] = in_file.readlines()
+                    with open(file_name + '.out', 'r') as out_file:
+                        f_dict["expected_output"] = ''.join(out_file.readlines())
+                except FileNotFoundError as err:
+                    self.__print_warn_info(self, f"{err}")
+
+                self._tests.append(f_dict)
+                already_read.append(file_name)
+
+            self._testNum = len(self._tests)
+            return True, self._testNum
+
+    def set_test_name(self, testName:str):
+        self._testName = testName
+
+    def get_test_name(self) -> str:
+        return self._testName
 
     def __default_tests(self) -> None:
         self._tests = [
-            {"input":[], "expected_output":""}
+            {"path":"", "input":[], "expected_output":""}
         ]
 
-    def __print_test_name(self, _end='') -> None: # print test name
-        print(f'[{self._colors[2]}{self._testName}{self._colors[3]}]', end=_end)
+    def __print_test_name(_end:str='') -> None: # print test name
+        def _print(print_func):
+            @wraps(print_func)
+            def warp(self, *args, **kwargs):
+                print(f'[{self._colors[2]}{self._testName}{self._colors[3]}]', end=_end)
+                print_func(*args, **kwargs)
+            return warp
+        return _print
+    
+    @__print_test_name()
+    def __print_finish_info(self) -> None:
+        print(f'{self._colors[0]}Test finished!{self._colors[3]} Total:{self._testNum}, Success:{self._successNum}, Fail:{self._testNum - self._successNum}{self._colors[3]}')
+
+    @__print_test_name()
+    def __print_pass_info(self) -> None:
+        print(f'{self._colors[0]}Test passed!{self._colors[3]}')
+
+    @__print_test_name()
+    def __print_fail_info(self, _input:list, _actual:str, printPath:bool=True) -> None:
+        if printPath:
+            print(f'{self._colors[1]}Test failed! test_case_path:{self._testCasePath}, output_path:{_input["path"]}{self._colors[3]}')
+        else:
+            print(f'{self._colors[1]}Test failed! input:{_input["input"]}, expected_output:{repr(["expected_output"])}, actual_output:{repr(_actual)}{self._colors[3]}')
+
+    @__print_test_name()
+    def __print_error_info(self, msg:str) -> None:
+        print(f"{self._colors[4]}{msg}{self._colors[3]}")
+
+    @__print_test_name()
+    def __print_warn_info(self, msg:str) -> None:
+        print(f"{self._colors[5]}{msg}{self._colors[3]}")
 
     def __gen_input(self) -> None: # generate special test input
         pass
@@ -61,11 +156,10 @@ class Test:
         
         return False, output
 
-    def __run_test(self, input_data:list) -> str: # run single test
-        p = subprocess.Popen([self._filePath], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-
+    def __run_test(self, _data:list) -> str: # run single test
+        p = subprocess.Popen([self._filePath, _data["path"]], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         try:
-            for i, item in enumerate(input_data):
+            for i, item in enumerate(_data["input"]):
                 p.stdin.write((item + '\n').encode())
                 p.stdin.flush()
 
@@ -73,28 +167,44 @@ class Test:
             p.stdin.close()
             p.stdout.close()
 
-            return _stdout.decode()
+            _dump_out = ""
+            try:
+                with open(_data["path"], 'r') as out_obj:
+                    _dump_out = ''.join(out_obj.readlines())
+            except FileNotFoundError as err:
+                self.__print_warn_info(self, f"{err}")
+
+            if self._DoneFunc:
+                # time.sleep(0.1)
+                self._DoneFunc()
+            
+            return _dump_out
         except BrokenPipeError:
-            self.__print_test_name()
-            print(f"{self._colors[4]}Run test error:[BrokenPipeError]. Other tests not terminated!{self._colors[3]}")
+            self.__print_warn_info(self, "Running warn:[BrokenPipeError]. Other tasks not terminated!")
             return ""
 
-    def create_test_tasks(self) -> None: # create test tasks, tesk num = self._testNum
+    def create_test_tasks(self, parallel:bool = False, concise:bool = False, printPath:bool = True) -> None: # create test tasks, tesk num = self._testNum
         self._successNum = 0
-
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            self._results = executor.map(self.__run_test, [test["input"] for test in self._tests])
+        if parallel:
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                self._results = executor.map(self.__run_test, [test for test in self._tests])
+                self._results = list(self._results)
+        else:
+            self._results = [self.__run_test(_) for _ in self._tests]
 
         for test, output in zip(self._tests, self._results):
-            self.__print_test_name()
             if output == test["expected_output"]:
                 self._successNum += 1
-                print(f'{self._colors[0]}Test passed!{self._colors[3]}')
+
+                if concise:
+                    continue
+                
+                self.__print_pass_info(self)
             else:
-                print(f'{self._colors[1]}Test failed! input:{test["input"]}, expected_output:{repr(test["expected_output"])}, actual_output:{repr(output)}{self._colors[3]}')
+                self.__print_fail_info(self, test ,output, printPath)
         
-        self.__print_test_name()
-        print(f'{self._colors[0]}Test finished!{self._colors[3]} Total:{self._testNum}, Success:{self._successNum}, Fail:{self._testNum - self._successNum}{self._colors[3]}')
+        self.__print_finish_info(self)
+
 
 class TestUnitTest(Test):
     '''
@@ -102,8 +212,8 @@ class TestUnitTest(Test):
     Test whether the unit test module is normal.
     '''
 
-    def __init__(self, filePath:str, testNum: int, hasIllegal:bool = False, ErrorRate:float = 0.05) -> None:
-        super().__init__(filePath, "TestUnitTest", testNum, hasIllegal, ErrorRate)
+    def __init__(self, filePath:str, testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None) -> None:
+        super().__init__(filePath, "TestUnitTest", testNum, hasIllegal, ErrorRate, TestCasePath, DoneFunc)
         self.__default_tests()
         if not hasIllegal:
             self._weights = [1, 0]
@@ -112,7 +222,7 @@ class TestUnitTest(Test):
     
     def __default_tests(self) -> None:
         self._tests = [
-            {"input":["1", "50", "0"], "expected_output": "1\n50\n0\n"},
+            {"path":f"./dump.out", "input":["1", "50", "0"], "expected_output": "1\n50\n0\n"},
         ]
 
     def gen_test(self) -> None:
@@ -123,8 +233,7 @@ class TestUnitTest(Test):
             rintb = str(random.randint(1, 10))
             rintc = str(random.randint(1, 10))
             self._tests.append({})
-            self._tests[i] = {"input": [rinta, rintb, rintc], "expected_output": rinta + '\n' + rintb + '\n' + rintc + '\n'}
-
+            self._tests[i] = {"path":f"./dump.out", "input": [rinta, rintb, rintc], "expected_output": rinta + ' ' + rintb + ' ' + rintc + '\n'}
 
 
 class TestPointStore(Test): # test for point store
@@ -135,8 +244,8 @@ class TestPointStore(Test): # test for point store
     example: input:['1', '50', '0'], expected_output:['已购买路障\n点数不足，退出道具房\n']
     '''
 
-    def __init__(self, filePath:str, testNum: int, hasIllegal:bool = False, ErrorRate:float = 0.05) -> None:
-        super().__init__(filePath, "TestPointStore", testNum, hasIllegal, ErrorRate)
+    def __init__(self, filePath:str, testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None) -> None:
+        super().__init__(filePath, "TestPointStore", testNum, hasIllegal, ErrorRate, TestCasePath, DoneFunc)
         self.__default_tests()
         if not hasIllegal:
             self._weights = [1, 0]
@@ -144,7 +253,7 @@ class TestPointStore(Test): # test for point store
 
     def __default_tests(self) -> None:
         self._tests = [
-            {"input":["1", "50", "0"], "expected_output":"已购买路障\n点数不足，退出道具房\n"},
+            {"path":"", "input":["1", "50", "0"], "expected_output":"已购买路障\n点数不足，退出道具房\n"},
         ]
     
     def gen_test(self) -> None: # generate special test
@@ -179,6 +288,7 @@ class TestPointStore(Test): # test for point store
             tools_number = random.randint(*tools_num_range)
 
             self._tests[i]["input"] = [input, str(points), str(tools_number)]
+            self._tests[i]["path"] = ""
     
     def __gen_expected_output(self) -> None:
         self._point = [50, 30, 50]
@@ -205,9 +315,9 @@ class TestPointStore(Test): # test for point store
                 test["expected_output"] = "非法输入\n"
             
 
-class TestDice(Test):
-    def __init__(self, filePath:str, testNum: int, hasIllegal:bool = False, ErrorRate:float = 0.05) -> None:
-        super().__init__(filePath, "TestDice", testNum, hasIllegal, ErrorRate)
+class NormalTest(Test):
+    def __init__(self, filePath:str, testName:str="", testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None) -> None:
+        super().__init__(filePath, testName, testNum, hasIllegal, ErrorRate, TestCasePath, DoneFunc)
         self.__default_tests()
         if not hasIllegal:
             self._weights = [1, 0]
@@ -215,75 +325,53 @@ class TestDice(Test):
 
     def __default_tests(self) -> None:
         self._tests = [
-            {"input":[], "expected_output":""}
+            {"path":"", "input":[], "expected_output":""}
         ]
 
 
-class TestMap(Test):
-    def __init__(self, filePath:str, testNum: int, hasIllegal:bool = False, ErrorRate:float = 0.05) -> None:
-        super().__init__(filePath, "TestMap", testNum, hasIllegal, ErrorRate)
-        self.__default_tests()
-        if not hasIllegal:
-            self._weights = [1, 0]
-            self._ErrorRate = 0
+def _test(path:str, DoneFunc = None) -> None:
+    print(f"{Fore.LIGHTCYAN_EX}Running script self check...{Fore.RESET}")
+    os.system(f"gcc ./{path}/UnitTestExample/Example.c -o ./{path}/UnitTestExample/Example")
+    _test = TestUnitTest(filePath=f"./{path}/UnitTestExample/Example", testNum=10, DoneFunc=DoneFunc)
+    _test.gen_test()
+    _test.create_test_tasks(parallel=False, concise=True)
 
-    def __default_tests(self) -> None:
-        self._tests = [
-            {"input":[], "expected_output":""}
-        ]
-
-
-class TestBuyLand(Test):
-    def __init__(self, filePath:str, testNum: int, hasIllegal:bool = False, ErrorRate:float = 0.05) -> None:
-        super().__init__(filePath, "TestBuyLand", testNum, hasIllegal, ErrorRate)
-        self.__default_tests()
-        if not hasIllegal:
-            self._weights = [1, 0]
-            self._ErrorRate = 0
-
-    def __default_tests(self) -> None:
-        self._tests = [
-            {"input":[], "expected_output":""}
-        ]
+    _test.read_test_case(TestCasePath=f"./{path}/UnitTestExample")
+    _test.create_test_tasks(parallel=False, concise=True)
+    
+    os.system(f"rm ./dump.out")
+    os.system(f"rm ./{path}/UnitTestExample/Example")
+    os.system(f"rm {_test._testCasePath}/TestCase_Print/Example1_r.out")
+    os.system(f"rm {_test._testCasePath}/TestCase_Print/Example2_r.out")
+    
+    print(f"{Fore.LIGHTCYAN_EX}Finished.{Fore.RESET}")
 
 
-class TestSellingLand(Test):
-    def __init__(self, filePath:str, testNum: int, hasIllegal:bool = False, ErrorRate:float = 0.05) -> None:
-        super().__init__(filePath, "TestSellingLand", testNum, hasIllegal, ErrorRate)
-        self.__default_tests()
-        if not hasIllegal:
-            self._weights = [1, 0]
-            self._ErrorRate = 0
+def SingleCommandTest(program_path:str, case_path:str, DoneFunc = None) -> None:
+    print(f"{Fore.LIGHTCYAN_EX}Running single command test...{Fore.RESET}")
+    _path = f"{case_path}/SingleCommand/"
+    test_content = {"dump": "TestDump", "init": "TestInit", "set": "TestSet", "step": "TestStep", }
+    for key, value in test_content.items():
+        test_content[key] = NormalTest(filePath=program_path, testName=value, TestCasePath=_path + key, DoneFunc=DoneFunc)
+        test_content[key].read_test_case()
 
-    def __default_tests(self) -> None:
-        self._tests = [
-            {"input":[], "expected_output":""}
-        ]
+    for key, value in test_content.items():
+        value.create_test_tasks(parallel=False, concise=True, printPath=True)
+
+    print(f"{Fore.LIGHTCYAN_EX}Finished.{Fore.RESET}")
+
         
+def main():
+    if len(sys.argv) != 3:
+        print('python UnitTest.py main TestCase_dir')
+        return
+    program_path = sys.argv[1]
+    case_path = sys.argv[2][:-1] if sys.argv[2].endswith('/') else sys.argv[2]
 
-
-if __name__ == '__main__':
-    path="/home/lighthouse/richman_2023/bin/richman_2023"
-    a = TestUnitTest(path, 5)
-    a.gen_test()
-    a.create_test_tasks()
-
-    # point store test
-    # input:one purchase operation, format: operation present_points present_item_num
-    # output: ["点数不足，退出道具房\n", "退出道具房\n", "道具已满\n", "已购买xxx\n", f"已购买xxx\n点数不足，退出道具房\n", "非法输入\n", "点数不足，购买失败\n"]
-    # example: input:['1', '50', '0'], expected_output:['已购买路障\n点数不足，退出道具房\n']
+    with alive_bar(total=42, title="total progress") as bar:
+        _test(case_path, bar)
+        SingleCommandTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
     
 
-    # create default tasks
-    # the tasks' details, plz see __default_tests function overloading
-    test_store = TestPointStore(path, 1)
-    test_store.create_test_tasks()
-
-    # create 10 random tasks
-    # randomly generated tasks may have poor quality
-    test_store = TestPointStore(path, 100)
-    test_store.gen_test()
-    test_store.create_test_tasks()
-
-
-    test_store = TestPointStore(path, 5)
+if __name__ == '__main__':
+    main()

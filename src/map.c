@@ -20,7 +20,7 @@ int initMap()
             map[i].item[j]=0;
         map[i].loc_id=i;
         map[i].whose=0;
-        map[i].level=0;
+        map[i].level=-1;
         map[i].color=0;
         if(i==29) price=500;
         else if(i==35) price=300;

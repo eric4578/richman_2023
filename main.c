@@ -53,6 +53,7 @@ int main() {
         printMap();
         action[0]='\0';
         /*指令输入*/
+        printf("%s>",NAME_FROM_ID[players[prid].id]);
         printf("输入用户命令\n");
         
         // 从标准输入读取指令
@@ -163,7 +164,7 @@ int main() {
                 printf("no robot\n");
             }
         }
-        else if (strcmp(action, "block") == 0)
+        else if (strcmp(action, "bomb") == 0)
         {
             int num=atoi(arg1);
             if(players[prid].toolnum[BOMB]>0)
@@ -174,6 +175,10 @@ int main() {
             {
                 printf("no bomb\n");
             }
+        }
+        else if(strcmp(action, "quit") == 0)
+        {
+            break;
         }
         else 
         {

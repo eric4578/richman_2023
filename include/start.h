@@ -13,6 +13,7 @@ void initPlayer(Player *player, int id);
 int get_set_fund();
 void freePlayer(Player*p);
 int getPlayerNumber();
+int isUniqueChars(char *str);
 static int PlayerNumber;
 
 #endif

@@ -115,7 +115,7 @@ int updatePlayer(Player*player)
     if(player->stop>0)
     {
         player->stop-=1;
-        printf("轮空：剩余%d轮\n",player->stop);
+        printf("%s>轮空：剩余%d轮\n",NAME_FROM_ID[player->id],player->stop);
     }
 }
 
@@ -153,20 +153,24 @@ int get_roll_number()
 /*支付租金,输入玩家id*/
 int payRent(int from,int to)
 {
+    int flag=0;
     for(int i;i<MAX_PLAYER_NUM;i++)
     {
         if(players[i].id==from)
         {
             from=i;
+            flag+=1;
         }
         if(players[i].id==to)
         {
             to=i;
+            flag+=1;
         }
+        if(flag==2) break;
     }
     if(players[from].buff<=0)//无buff
     {
-        int index=players->loc;
+        int index=players[from].loc;
         int rent=(int)(map[index].price * (map[index].level + 1)/2);
         if(players[from].fund>=rent&&players[to].stop==0)//支付租金 
         {
