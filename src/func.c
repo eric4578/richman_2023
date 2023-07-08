@@ -19,12 +19,12 @@ int buyLand(Player* player, int index) {
     }
     // 此地已经被别人购买
     if(map[index].whose != player->id && map[index].whose != 0) {
-        printf("此地已经被别人购买\n");
+        printf("位于%d的土地已经被%s购买\n", index, NAME_FROM_ID[map[index].whose]);
         return ERROR;
     }
     // 用户的可用资产不足以购买当前土地
     if(player->fund < map[index].price) {
-        printf("你的资金不足以购买或升级当前土地\n");
+        printf("你的资金不足以购买或升级位于%d的土地\n", index);
         return ERROR;
     }
     else {
@@ -32,12 +32,12 @@ int buyLand(Player* player, int index) {
         if(map[index].whose == player->id) {
             //当前土地的等级已经最高，玩家不能再升级
             if(map[index].level >= LEVEL3) {
-                printf("当前土地已经处于最高等级，不能购买或升级\n");
+                printf("位于%d的土地已经处于最高等级，不能购买或升级\n", index);
                 return ERROR;
             }
             //玩家可以选择升级当前土地
             else {
-                printf("你是否选择升级这块土地(y/n)\n");
+                printf("你是否选择升级位于%d土地，需要花费%d(y/n)\n", index, map[index].price);
                 char input[10];
                 while(1) {
                     memset(input, 0, sizeof(input));
@@ -62,7 +62,7 @@ int buyLand(Player* player, int index) {
         }
         //当前的地块不属于当前用户，用户可以选择购买
         else {
-            printf("你是否选择购买这块土地(y/n)\n");
+            printf("你是否选择购买位于%d的土地，需要花费%d(y/n)\n", index, map[index].price);
             char input[10];
             while(1) {
                 memset(input, 0, sizeof(input));
@@ -97,11 +97,12 @@ int buyLand(Player* player, int index) {
 int sellLand(Player* player, int index) {
     //玩家只能出售自己的地块，不能出售别人的地块或者没有归属的地块
     if(player->id != map[index].whose || map[index].whose == 0) {
-        printf("这块地产不属于你，你无法进行售卖\n");
+        printf("位于%d的土地属于%s，你无法进行售卖\n", index, NAME_FROM_ID[map[index].whose]);
         return ERROR;
     }
     else {
         //玩家出售地块，玩家资产更新，拥有地块更新，地块属性更新
+        printf("你出售了位于%d等级为%d的土地，你已经获得%d元\n", index, map[index].level, map[index].price * (map[index].level + 1)*2);
         player->fund += map[index].price * (map[index].level + 1)*2;
         //todo: 等待最后确认house初始化内容
         player->house[index] = -1;

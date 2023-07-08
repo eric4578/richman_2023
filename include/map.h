@@ -1,6 +1,7 @@
 #ifndef MAP_H
 #define MAP_H
 #include "global.h"
+#include "Player.h"
 
 
 typedef struct mapNode{/*whom->whose;user->player;*/
@@ -23,4 +24,5 @@ int printMap();
 int getcolor(char ch);
 int get_Mine_points(int index);
 int updateMapNode(int index);
+int printUser(Player* player);
 #endif

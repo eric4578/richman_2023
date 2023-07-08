@@ -32,7 +32,6 @@ int main(int argc,char*argv[]) {
     char arg2[20];
     char arg3[20];
     char arg4[20];
-    getchar();
 
     while (1) {
         /*回合数更新*/
@@ -53,9 +52,10 @@ int main(int argc,char*argv[]) {
         printMap();
         action[0]='\0';
         /*指令输入*/
-        printf("%s>",NAME_FROM_ID[players[prid].id]);
-        printf("输入用户命令\n");
+        printUser(players+prid);
+        // printf("输入用户命令\n");
         
+        fflush(stdin);
         // 从标准输入读取指令
         fgets(command, sizeof(command), stdin);  
         // 去除指令末尾的换行符
@@ -126,6 +126,7 @@ int main(int argc,char*argv[]) {
         else if (strcmp(action, "roll") == 0) 
         {
             int rollNumber=get_roll_number();
+            printf("你掷得的点数为%d\n", rollNumber);
             step((players+prid),rollNumber);
             prid=(prid+1)%PlayerNumber;
             //清空缓冲区
@@ -165,7 +166,6 @@ int main(int argc,char*argv[]) {
         }
         else if(strcmp(action, "quit") == 0)
         {
-            printf("end\n");
             quit();
             break;
         }

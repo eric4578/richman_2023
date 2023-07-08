@@ -3,16 +3,24 @@
 /*游戏一开始最先调用的函数*/
 int start(Player*players)
 {
-    char s[5] = "\0";
+    char s[256] = "\0";
     int flag=-1;
+    char c;
     int fund = get_set_fund();
-    printf("请输入角色：\n");
-    while(flag==-1){//输入错误会让重输
-        scanf("%s", s);
+    printf("请输入角色：");
+    while(flag==-1){//输入错误会让重输    
+        fgets(s, sizeof(s), stdin);
+        // 检查输入是否超出长度限制
+        s[strcspn(s, "\n")] = '\0';
+        if (strlen(s) > 4) {
+            printf("输入错误！超出长度限制。\n");
+            memset(s, 0, sizeof(s));
+            fflush(stdin);
+            continue;
+        }
         flag=set_init_role(players,s);
     }
     set_init_fund(players,fund);
-    
 }
 
 /*设置初始资金*/
@@ -34,7 +42,7 @@ int set_init_role(Player*players,char*s)
     char *c = s;
     while ((*c) != '\0')
     {
-        if (!isdigit(*c))
+        if (!isdigit(*c) || (*c - '0') <= 0 || (*c - '0') > 4)
         {
             printf("非法输入\n");
             return -1;
@@ -104,7 +112,7 @@ int get_set_fund()
 
     while (1)
     {
-        printf("设置初始资金");
+        printf("设置初始资金(1000-50000，回车默认10000)：");
         fflush(stdout);
 
         char input[100];

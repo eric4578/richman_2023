@@ -277,9 +277,23 @@ int dump_file(Player* p, int PlayerNumber, int preuser, char*file_path){
 
     for (int i = 0; i < 70; ++i)
     {   
-        if(strlen(map[i].user) != 0)
+        if(strlen(map[i].user) != 0 &&map[i].user[0]!=0)
         {
-            sprintf(line,"mapuser %d %s",i,map[i].user);
+            char buf[MAX_PLAYER_NUM+1];
+            int index=0;
+            for(int j=MAX_PLAYER_NUM;j>=0;j--){
+                if (map[i].user[j]=='Q'||
+                    map[i].user[j]=='A'||
+                    map[i].user[j]=='S'||
+                    map[i].user[j]=='J')
+                    {
+                        buf[index]=map[i].user[j];
+                        index++;
+                    }
+            }
+            buf[index]='\0';
+            if(i==0) sprintf(line,"mapuser %d %s",i,map[i].user);
+            else sprintf(line,"mapuser %d %s",i,buf);
             fprintf(fp, "%s\n",line);
         }
     }

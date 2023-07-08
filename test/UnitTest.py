@@ -170,6 +170,8 @@ class Test:
             # p.stdin.close()
             # p.stdout.close()
             # print(_stdout.decode())
+            p.terminate()
+            p.wait()
             time.sleep(0.1)
             _dump_out = ""
             try:
@@ -235,7 +237,7 @@ def SingleCommandTest(program_path:str, case_path:str, DoneFunc = None) -> list[
 
     total, success = 0, 0
     for key, value in test_content.items():
-        value.create_test_tasks(parallel=False, concise=False, printPath=True)
+        value.create_test_tasks(parallel=True, concise=False, printPath=True)
         _total, _success = value._testNum, value._successNum
         total += _total
         success += _success
@@ -258,7 +260,7 @@ def MultiCommandTest(program_path:str, case_path:str, DoneFunc = None) -> list[i
 
     total, success = 0, 0
     for key, value in test_content.items():
-        value.create_test_tasks(parallel=False, concise=False, printPath=True)
+        value.create_test_tasks(parallel=True, concise=False, printPath=True)
         _total, _success = value._testNum, value._successNum
         total += _total
         success += _success
@@ -266,12 +268,24 @@ def MultiCommandTest(program_path:str, case_path:str, DoneFunc = None) -> list[i
     print(f"{Fore.LIGHTCYAN_EX}Finished.{Fore.RESET}")
     return total, success
 
+def OtherTest(program_path:str, case_path:str, DoneFunc = None) -> list[int, int]:
+    print(f"{Fore.LIGHTCYAN_EX}Running other test...{Fore.RESET}")
+    _path = f"{case_path}/Other/"
+
+    other_test = NormalTest(filePath=program_path, testName="TestOther", TestCasePath=_path, DoneFunc=DoneFunc)
+    other_test.read_test_case()
+
+    other_test.create_test_tasks(parallel=True, concise=False, printPath=True)
+    total, success = other_test._testNum, other_test._successNum
+
+    print(f"{Fore.LIGHTCYAN_EX}Finished.{Fore.RESET}")
+    return total, success
 
 def main():
-    # if platform.system() == "Windows":
-    #     os.system("cls")
-    # else:
-    #     os.system("clear")
+    if platform.system() == "Windows":
+        os.system("cls")
+    else:
+        os.system("clear")
 
     if len(sys.argv) != 3:
         print('python UnitTest.py main TestCase_dir')
@@ -281,11 +295,14 @@ def main():
 
     os.system(f"cp -r ./{case_path}/TestCase_Print {program_path.replace('richman', '')}")
     total, success = 0, 0
-    with alive_bar(total=52, title="total progress") as bar:
+    with alive_bar(total=75, title="total progress") as bar:
         _total, _success = SingleCommandTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
         total += _total
         success += _success
         _total, _success = MultiCommandTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
+        total += _total
+        success += _success
+        _total, _success = OtherTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
         total += _total
         success += _success
     

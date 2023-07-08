@@ -10,3 +10,4 @@ Makefile
 /CMakeFiles
 /bin
 /build
+/dump.out

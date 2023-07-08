@@ -44,6 +44,27 @@ int initMap()
     }
 }
 
+int printUser(Player* player) {
+    switch (player->id)
+    {
+    case 1:
+        printf(ANSI_COLOR_RED"%s>"ANSI_COLOR_RESET, NAME_FROM_ID[player->id]);
+        break;
+    case 2:
+        printf(ANSI_COLOR_GREEN"%s>"ANSI_COLOR_RESET, NAME_FROM_ID[player->id]);
+        break;
+    case 3:
+        printf(ANSI_COLOR_BLUE"%s>"ANSI_COLOR_RESET, NAME_FROM_ID[player->id]);
+        break;
+    case 4:
+        printf(ANSI_COLOR_YELLOW"%s>"ANSI_COLOR_RESET, NAME_FROM_ID[player->id]);
+        break;
+    default:
+        break;
+    }
+    return 0;
+}
+
 int printNode(mapnode node)//根据打印的地点打印单个字符
 {
     switch(node.color)
