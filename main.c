@@ -148,6 +148,7 @@ int main(int argc,char*argv[]) {
         else if (strcmp(action, "block") == 0)
         {
             block(players+prid, atoi(arg1));
+            updateMapNode((players + prid)->loc + atoi(arg1));
         }
         else if (strcmp(action, "robot") == 0)
         {

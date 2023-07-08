@@ -158,11 +158,11 @@ int updateMapNode(int index)//更新对应节点的显示字符和颜色
         map[index].color=getcolor(getPlayerch(map[index].whose));
     }
     //有没有道具
-    if(map[index].item[0])
+    if(map[index].item[1])
     {
         map[index].ch='#';
     }
-    if(map[index].item[2])
+    if(map[index].item[3])
     {
         map[index].ch='@';
     }
