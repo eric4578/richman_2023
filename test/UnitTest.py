@@ -156,20 +156,21 @@ class Test:
 
     def __run_test(self, _data:list) -> str: # run single test
         p = subprocess.Popen([self._filePath, _data["path"]], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        print(_data["path"])
         try:
             for i, item in enumerate(_data["input"]):
                 p.stdin.write((item + '\n').encode())
             # os.system(f"echo {''.join(_data['input'])} | {self._filePath} {_data['path']} > /dev/null")
 
-            _stdout, _ = p.communicate()
-            # p.stdin.write(('\n').encode())
+            try:
+                _stdout, _ = p.communicate(timeout=1)
+            except subprocess.TimeoutExpired as err:
+                self.__print_warn_info(self, f"Running warn:{err}")
             # p.stdin.flush()
             # p.stdout.flush()
-            p.stdin.close()
-            p.stdout.close()
+            # p.stdin.close()
+            # p.stdout.close()
             # print(_stdout.decode())
-            time.sleep(1)
+            time.sleep(0.1)
             _dump_out = ""
             try:
                 with open(_data["path"], 'r') as out_obj:
@@ -224,7 +225,7 @@ class NormalTest(Test):
         ]
 
 
-def SingleCommandTest(program_path:str, case_path:str, DoneFunc = None) -> None:
+def SingleCommandTest(program_path:str, case_path:str, DoneFunc = None) -> list[int, int]:
     print(f"{Fore.LIGHTCYAN_EX}Running single command test...{Fore.RESET}")
     _path = f"{case_path}/SingleCommand/"
     test_content = {"dump": "TestDump", "init": "TestInit", "set": "TestSet", "step": "TestStep", }
@@ -232,28 +233,67 @@ def SingleCommandTest(program_path:str, case_path:str, DoneFunc = None) -> None:
         test_content[key] = NormalTest(filePath=program_path, testName=value, TestCasePath=_path + key, DoneFunc=DoneFunc)
         test_content[key].read_test_case()
 
+    total, success = 0, 0
     for key, value in test_content.items():
-        value.create_test_tasks(parallel=False, concise=True, printPath=True)
+        value.create_test_tasks(parallel=False, concise=False, printPath=True)
+        _total, _success = value._testNum, value._successNum
+        total += _total
+        success += _success
 
     print(f"{Fore.LIGHTCYAN_EX}Finished.{Fore.RESET}")
+    return total, success
 
-        
+
+def MultiCommandTest(program_path:str, case_path:str, DoneFunc = None) -> list[int, int]:
+    print(f"{Fore.LIGHTCYAN_EX}Running multiple command test...{Fore.RESET}")
+    _path = f"{case_path}/MultiCommand/"
+    test_content = {
+        "item": "TestItem", "broke": "TestBroke", "hospital": "TestHospital", "buff": "TestBuff", "gifthouse": "TestGiftHouse",
+        "house": "TestHouse", "magicroom": "TestMagicRoom", "mine": "TestMine", "pointstore": "TestPointStore", "prison": "TestPrison",
+    }
+
+    for key, value in test_content.items():
+        test_content[key] = NormalTest(filePath=program_path, testName=value, TestCasePath=_path + key, DoneFunc=DoneFunc)
+        test_content[key].read_test_case()
+
+    total, success = 0, 0
+    for key, value in test_content.items():
+        value.create_test_tasks(parallel=False, concise=False, printPath=True)
+        _total, _success = value._testNum, value._successNum
+        total += _total
+        success += _success
+
+    print(f"{Fore.LIGHTCYAN_EX}Finished.{Fore.RESET}")
+    return total, success
+
+
 def main():
+    # if platform.system() == "Windows":
+    #     os.system("cls")
+    # else:
+    #     os.system("clear")
+
     if len(sys.argv) != 3:
         print('python UnitTest.py main TestCase_dir')
         return
     program_path = sys.argv[1]
     case_path = sys.argv[2][:-1] if sys.argv[2].endswith('/') else sys.argv[2]
 
-    os.system(f"cp -r {case_path}/TestCase_Print {program_path.replace('richman', '')}")
-
-    with alive_bar(total=30, title="total progress") as bar:
-        SingleCommandTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
+    os.system(f"cp -r ./{case_path}/TestCase_Print {program_path.replace('richman', '')}")
+    total, success = 0, 0
+    with alive_bar(total=52, title="total progress") as bar:
+        _total, _success = SingleCommandTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
+        total += _total
+        success += _success
+        _total, _success = MultiCommandTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
+        total += _total
+        success += _success
+    
+    print(f"[{Fore.BLUE}Result{Fore.RESET}]"
+          f"{Fore.LIGHTCYAN_EX}Total:{total}{Fore.RESET}, "
+          f"{Fore.LIGHTGREEN_EX}Success:{success}{Fore.RESET}, " 
+          f"{Fore.LIGHTRED_EX}Fail:{total-success}{Fore.RESET}")
     
 
 if __name__ == '__main__':
-    if platform.system() == "Windows":
-        os.system("cls")
-    else:
-        os.system("clear")
     main()

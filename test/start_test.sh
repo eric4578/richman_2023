@@ -3,11 +3,7 @@
 DIR=`pwd`
 PIP_PATH=`which pip`
 PY_PATH=`which python`
-TEST_PATH=../bin/TestCase_Print
-
-if [ -d ${TEST_PATH} ]; then
-    rm -rf ${TEST_PATH}
-fi
+CASE_PRINT_PATH=../bin/TestCase_Print
 
 if [ ! -n "$PIP_PATH" ]; then 
     PY_PATH=`which pip3`
@@ -28,4 +24,7 @@ if [ ! -n "$PY_PATH" ]; then
 fi 
 
 $PIP_PATH install -r requirements.txt
+
+rm -r $CASE_PRINT_PATH
+
 $PY_PATH UnitTest.py ../bin/richman TestCase/
