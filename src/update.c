@@ -135,7 +135,7 @@ int get_roll_number()
 int payRent(int from,int to)
 {
     int flag=0;
-    for(int i;i<MAX_PLAYER_NUM;i++)
+    for(int i=0;i<MAX_PLAYER_NUM;i++)
     {
         if(players[i].id==from)
         {
