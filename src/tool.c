@@ -85,13 +85,13 @@ void buyBomb(Player*player)
 int solve_Bomb(Player*player,int index)
 {
     map[index].item[3]=0;//记得换成宏
-    player->loc=HOSPITAL;
+    // player->loc=HOSPITAL;
     player->stop=3;
     return 3;
 }
 int solve_Block(Player*player,int index)
 {
     map[index].item[1]=0;//记得换成宏
-    player->loc=index;
+    // player->loc=index;
     return 1;
 }

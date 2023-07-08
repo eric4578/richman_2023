@@ -147,24 +147,20 @@ int query(Player * player) {
     parameter: Player* player
     return: 
 */
-int bomb(Player * player) {
+int bomb(Player * player, int index) {
     if(player->toolnum[3] == 0) {
         printf("你并没有炸弹道具\n");
         return 0;
     }
-    int index = 0;
-    printf("请输入：\n");
-    while(scanf("%d\n", &index) != EOF && index != 0 && index <= 10 && index >= -10) {
+    if(index != 0 && index <= 10 && index >= -10) {
         if((player->loc + index + 70) % 70 == HOSPITAL || (player->loc + index + 70) % 70 == PRISON) {
             printf("不能将炸弹放到医院或者监狱\n");
-            continue;
         }
         else if(map[(player->loc + index + 70) % 70].user[0] == 'Q' || 
                 map[(player->loc + index + 70) % 70].user[0] == 'A' ||
                 map[(player->loc + index + 70) % 70].user[0] == 'S' ||
                 map[(player->loc + index + 70) % 70].user[0] == 'J') {
             printf("不能将炸弹放到玩家脚下\n");
-            continue;
         }
         //正常
         else {
@@ -177,24 +173,20 @@ int bomb(Player * player) {
     return 0;
 }
 
-int block(Player * player) {
+int block(Player * player, int index) {
     if(player->toolnum[1] == 0) {
         printf("你并没有路障道具\n");
         return 0;
     }
-    int index = 0;
-    printf("请输入：\n");
-    while(scanf("%d\n", &index) != EOF && index != 0 && index <= 10 && index >= -10) {
+    if(index != 0 && index <= 10 && index >= -10) {
         if((player->loc + index + 70) % 70 == HOSPITAL || (player->loc + index + 70) % 70 == PRISON) {
             printf("不能将炸弹放到医院或者监狱\n");
-            continue;
         }
         else if(map[(player->loc + index + 70) % 70].user[0] == 'Q' || 
                 map[(player->loc + index + 70) % 70].user[0] == 'A' ||
                 map[(player->loc + index + 70) % 70].user[0] == 'S' ||
                 map[(player->loc + index + 70) % 70].user[0] == 'J') {
             printf("不能将炸弹放到玩家脚下\n");
-            continue;
         }
         //正常
         else {

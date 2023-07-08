@@ -96,7 +96,7 @@ int main(int argc,char*argv[]) {
             {
                 setBomb(arg2);
             }
-            else if(strcmp(arg1,"barrier")==0)
+            else if(strcmp(arg1,"block")==0)
             {
                 setBarrier(arg2);
             }
@@ -141,7 +141,7 @@ int main(int argc,char*argv[]) {
         }
         else if (strcmp(action, "block") == 0)
         {
-            block(players+prid);
+            block(players+prid, atoi(arg1));
         }
         else if (strcmp(action, "robot") == 0)
         {
@@ -149,7 +149,7 @@ int main(int argc,char*argv[]) {
         }
         else if (strcmp(action, "bomb") == 0)
         {
-            bomb(players+prid);
+            bomb(players+prid, atoi(arg1));
         }
         else if(strcmp(action, "query") == 0)
         {

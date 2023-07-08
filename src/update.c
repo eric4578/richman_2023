@@ -20,7 +20,7 @@ int step(Player*player,int step)
         flag=((player->loc)+i)%MAX_MAP_NUM;
         if(map[flag].item[1]||map[flag].item[3])
         {
-            if(map[flag].item[1])
+            if(map[flag].item[3])
                 flag=solve_Bomb(player,flag);//处理炸弹
             else
                 flag=solve_Block(player,flag);//处理障碍
@@ -135,44 +135,46 @@ int get_roll_number()
 int payRent(int from,int to)
 {
     int flag=0;
+    int from_index = -1;
+    int to_index = -1;
     for(int i=0;i<MAX_PLAYER_NUM;i++)
     {
         if(players[i].id==from)
         {
-            from=i;
+            from_index=i;
             flag+=1;
         }
         if(players[i].id==to)
         {
-            to=i;
+            to_index=i;
             flag+=1;
         }
         if(flag==2) break;
     }
-    if(players[from].buff<=0)//无buff
+    if(players[from_index].buff<=0)//无buff
     {
-        int index=players[from].loc;
-        int rent=(int)(map[index].price * (map[index].level + 1)/2);
-        if(players[from].fund>=rent&&players[to].stop==0)//支付租金 
+        int index=players[from_index].loc;
+        int rent = (map[index].price * (map[index].level + 1)) >> 1;
+        if(players[from_index].fund>=rent && players[to_index].stop==0)//支付租金 
         {
-            printf("支付%d租金给%s\n",rent,NAME_FROM_ID[players[to].id]);
-            players[from].fund-=rent;
-            players[to].fund+=rent;
+            printf("支付%d租金给%s\n",rent,NAME_FROM_ID[players[to_index].id]);
+            players[from_index].fund-=rent;
+            players[to_index].fund+=rent;
         }
         
-        else if(players[from].fund<rent)//玩家破产
+        else if(players[from_index].fund<rent)//玩家破产
         {
-            players[from].alive=0;
-            players[from].id=0;
-            players[from].fund=0;
+            players[from_index].alive=0;
+            players[from_index].id=0;
+            players[from_index].fund=0;
             for(int i=0;i<MAX_MAP_NUM;i++)
-                players[from].house[i]=-1;
-            players[from].buff=0;
-            players[from].loc=0;
+                players[from_index].house[i]=-1;
+            players[from_index].buff=0;
+            players[from_index].loc=0;
             for(int i=0;i<MAX_TOOL_NUM;i++)
-                players[from].toolnum[i]=0;
-            players[from].points=0;
-            players[from].stop=0;
+                players[from_index].toolnum[i]=0;
+            players[from_index].points=0;
+            players[from_index].stop=0;
         }
     }
     else

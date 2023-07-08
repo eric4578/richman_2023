@@ -7,8 +7,8 @@ int buyLand(Player* player, int index) ;
 int sellLand(Player* player, int index) ;
 
 int query(Player * player);
-int bomb(Player * player);
-int block(Player * player);
+int bomb(Player * player, int index);
+int block(Player * player, int index);
 int robot(Player * player);
 void help();
 void quit();
