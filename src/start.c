@@ -7,13 +7,14 @@ int start(Player*players)
     int flag=-1;
     char c;
     int fund = get_set_fund();
-    printf("请输入角色(1：钱夫人，2：阿土伯，3：孙小美，4：金贝贝):");
+    
     while(flag==-1){//输入错误会让重输    
+        printf("请输入角色(1：钱夫人，2：阿土伯，3：孙小美，4：金贝贝):");
         fgets(s, sizeof(s), stdin);
         // 检查输入是否超出长度限制
         s[strcspn(s, "\n")] = '\0';
         if (strlen(s) > 4) {
-            printf("输入错误！超出长度限制。\n");
+            printf("输入错误！请重新输入\n");
             memset(s, 0, sizeof(s));
             fflush(stdin);
             continue;
