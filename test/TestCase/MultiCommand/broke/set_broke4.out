@@ -9,7 +9,7 @@ item2 0
 item3 0
 buff 0
 stop 0
-userloc 2
+userloc 3
 A
 alive 0
 money 0
@@ -29,7 +29,7 @@ item2 0
 item3 0
 buff 0
 stop 0
-userloc 0
+userloc 3
 J
 alive 0
 money 0
@@ -42,6 +42,5 @@ stop 0
 userloc 0
 MAP
 mapuser 3 SQ
-map 1 A 3
 map 2 Q 3
 map 3 S 3

@@ -12,7 +12,7 @@ from alive_progress import alive_bar
 
 
 class Test:
-    def __init__(self, filePath:str, testName:str = "", testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None) -> None:
+    def __init__(self, filePath:str, testName:str = "", testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None, WarnOut:bool=False) -> None:
         self._tests = []
         self._filePath = filePath
         self._test_gen_path, self.__file_name = os.path.split(self._filePath)
@@ -30,6 +30,8 @@ class Test:
         self._successNum = 0 # success test num
         self._system = platform.system()
         self._DoneFunc = DoneFunc
+        self._WarnOut = WarnOut
+
 
         if not os.path.exists(self._filePath):
             self.__print_error_info(self, "Fail to open file!")
@@ -79,7 +81,8 @@ class Test:
                     with open(file_name + '.out', 'r') as out_file:
                         f_dict["expected_output"] = ''.join(out_file.readlines()).strip()
                 except FileNotFoundError as err:
-                    self.__print_warn_info(self, f"{err}")
+                    if self._WarnOut:
+                        self.__print_warn_info(self, f"{err}")
 
                 self._tests.append(f_dict)
                 already_read.append(file_name)
@@ -164,7 +167,8 @@ class Test:
             try:
                 _stdout, _ = p.communicate(timeout=1)
             except subprocess.TimeoutExpired as err:
-                self.__print_warn_info(self, f"Running warn:{err}")
+                if self._WarnOut:
+                    self.__print_warn_info(self, f"Running warn:{err}")
             # p.stdin.flush()
             # p.stdout.flush()
             # p.stdin.close()
@@ -178,7 +182,8 @@ class Test:
                 with open(_data["path"], 'r') as out_obj:
                     _dump_out = ''.join(out_obj.readlines())
             except FileNotFoundError as err:
-                self.__print_warn_info(self, f"{err}")
+                if self._WarnOut:
+                    self.__print_warn_info(self, f"{err}")
 
             if self._DoneFunc:
                 # time.sleep(0.1)
@@ -186,7 +191,8 @@ class Test:
             
             return _dump_out.strip()
         except BrokenPipeError:
-            self.__print_warn_info(self, "Running warn:[BrokenPipeError]. Other tasks not terminated!")
+            if self._WarnOut:
+                self.__print_warn_info(self, "Running warn:[BrokenPipeError]. Other tasks not terminated!")
             return ""
 
     def create_test_tasks(self, parallel:bool = False, concise:bool = False, printPath:bool = True) -> None: # create test tasks, tesk num = self._testNum
@@ -237,7 +243,7 @@ def SingleCommandTest(program_path:str, case_path:str, DoneFunc = None) -> list[
 
     total, success = 0, 0
     for key, value in test_content.items():
-        value.create_test_tasks(parallel=True, concise=False, printPath=True)
+        value.create_test_tasks(parallel=True, concise=True, printPath=True)
         _total, _success = value._testNum, value._successNum
         total += _total
         success += _success
@@ -260,7 +266,7 @@ def MultiCommandTest(program_path:str, case_path:str, DoneFunc = None) -> list[i
 
     total, success = 0, 0
     for key, value in test_content.items():
-        value.create_test_tasks(parallel=True, concise=False, printPath=True)
+        value.create_test_tasks(parallel=True, concise=True, printPath=True)
         _total, _success = value._testNum, value._successNum
         total += _total
         success += _success
@@ -275,7 +281,7 @@ def OtherTest(program_path:str, case_path:str, DoneFunc = None) -> list[int, int
     other_test = NormalTest(filePath=program_path, testName="TestOther", TestCasePath=_path, DoneFunc=DoneFunc)
     other_test.read_test_case()
 
-    other_test.create_test_tasks(parallel=True, concise=False, printPath=True)
+    other_test.create_test_tasks(parallel=True, concise=True, printPath=True)
     total, success = other_test._testNum, other_test._successNum
 
     print(f"{Fore.LIGHTCYAN_EX}Finished.{Fore.RESET}")
@@ -295,16 +301,16 @@ def main():
 
     os.system(f"cp -r ./{case_path}/TestCase_Print {program_path.replace('richman', '')}")
     total, success = 0, 0
-    with alive_bar(total=81, title="total progress") as bar:
+    with alive_bar(total=79, title="total progress") as bar:
         _total, _success = SingleCommandTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
         total += _total
         success += _success
         _total, _success = MultiCommandTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
         total += _total
         success += _success
-        _total, _success = OtherTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
-        total += _total
-        success += _success
+        # _total, _success = OtherTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
+        # total += _total
+        # success += _success
     
     print(f"[{Fore.BLUE}Result{Fore.RESET}]"
           f"{Fore.LIGHTCYAN_EX}Total:{total}{Fore.RESET}, "

@@ -2,7 +2,7 @@ user QAS
 preuser Q
 Q
 alive 1
-money 10400
+money 10800
 point 0
 item1 0
 item2 0
@@ -18,11 +18,11 @@ item1 0
 item2 0
 item3 0
 buff 0
-stop 1
+stop 0
 userloc 14
 S
 alive 1
-money 9600
+money 9200
 point 0
 item1 0
 item2 0

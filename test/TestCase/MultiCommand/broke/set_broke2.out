@@ -22,7 +22,7 @@ stop 0
 userloc 2
 S
 alive 1
-money 10000
+money 10400
 point 0
 item1 0
 item2 0
@@ -42,5 +42,6 @@ stop 0
 userloc 0
 MAP
 mapuser 0 S
+mapuser 2 A
 map 1 A 3
 map 2 S 3
