@@ -15,7 +15,8 @@ int initMap()
     {
         map[i].ch='0';
         for(int j=0;j<4;j++)
-            map[i].user[j]=0;
+            map[i].user[j]='\0';
+        //map[i].user[0]=0;
         for(int j=0;j<3;j++)
             map[i].item[j]=0;
         map[i].loc_id=i;
@@ -166,7 +167,7 @@ int updateMapNode(int index)//更新对应节点的显示字符和颜色
         map[index].ch='@';
     }
     //有没有玩家，最后的玩家显示
-    if(map[index].user[0])
+    if(map[index].user[0]&&map[index].user[0]!='\0')
     {
         map[index].ch=map[index].user[0];
         map[index].color=getcolor(map[index].user[0]);

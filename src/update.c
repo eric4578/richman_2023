@@ -73,6 +73,7 @@ int step(Player*player,int step)
     else if(player->loc==GIFTROOM)
     {
         printf("进入礼品屋\n");
+        printf("选择1.奖金2000元；2.点数卡200点；3.财神buff\n");
         getGift(player);//todo
     }
     //是否为道具屋
@@ -110,12 +111,14 @@ int updatePlayer(Player*player)
     if(player->buff>0)
     {
         player->buff-=1;
-        printf("剩余buff:%d\n",player->buff);
+        printUser(player);
+        printf("剩余buff:%d\n", player->buff);
     }
     if(player->stop>0)
     {
         player->stop-=1;
-        printf("%s>轮空：剩余%d轮\n",NAME_FROM_ID[player->id],player->stop);
+        printUser(player);
+        printf("轮空：剩余%d轮\n", player->stop);
     }
 }
 

@@ -40,13 +40,7 @@ int main(int argc,char*argv[]) {
             prid=(prid+1)%PlayerNumber;
             continue;
         }
-        /*更新角色状态*/
-        if(players[prid].stop>0){
-            updatePlayer(players+prid);
-            prid=(prid+1)%PlayerNumber;
-            continue;
-        }
-        updatePlayer(players+prid);//进行buff，stop的更新
+        
 
         /*打印地图*/
         printMap();
@@ -96,7 +90,7 @@ int main(int argc,char*argv[]) {
             {
                 setBomb(arg2);
             }
-            else if(strcmp(arg1,"block")==0)
+            else if(strcmp(arg1,"barrier")==0)
             {
                 setBarrier(arg2);
             }
@@ -116,10 +110,14 @@ int main(int argc,char*argv[]) {
         else if (strcmp(action, "step") == 0) {//step指令
             step((players+prid),atoi(arg1));
             prid=(prid+1)%PlayerNumber;
-            //清空缓冲区
-            // char input[20];
-            // fgets(input, sizeof(input), stdin);  
-            continue;
+            /*更新角色状态*/
+            if(players[prid].stop>0){
+                updatePlayer(players+prid);
+                prid=(prid+1)%PlayerNumber;
+                continue;
+            }
+            updatePlayer(players+prid);//进行buff，stop的更新
+                continue;
         }
 
         /*游戏指令*/
@@ -129,6 +127,13 @@ int main(int argc,char*argv[]) {
             printf("你掷得的点数为%d\n", rollNumber);
             step((players+prid),rollNumber);
             prid=(prid+1)%PlayerNumber;
+            /*更新角色状态*/
+            if(players[prid].stop>0){
+                updatePlayer(players+prid);
+                prid=(prid+1)%PlayerNumber;
+                continue;
+            }
+            updatePlayer(players+prid);//进行buff，stop的更新
             //清空缓冲区
             // char input[20];
             // fgets(input, sizeof(input), stdin);  
