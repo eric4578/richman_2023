@@ -153,7 +153,8 @@ int main(int argc,char*argv[]) {
         }
         else if(strcmp(action, "query") == 0)
         {
-            printf("总财产%d\n",query(players+prid));
+            // printf("总财产%d\n",query(players+prid));
+            query(players + prid);
         }
         else if (strcmp(action, "dump") == 0)
         {

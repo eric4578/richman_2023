@@ -1,4 +1,7 @@
 #include"func.h"
+#include "Player.h"
+#include "map.h"
+#include "global.h"
 #include<string.h>
 extern mapnode map[MAX_MAP_NUM];
 extern Player players[MAX_PLAYER_NUM];
@@ -116,30 +119,28 @@ void help(){
 void quit(){
     printf("退出游戏\n");
 }
-
-#include "Player.h"
-#include "map.h"
-#include "global.h"
-
 /*
     function: 查询玩家的所有资产
     parameter: PLAYER * player
-    return: 返回玩家的所有资产
+    return:
 */ 
 int query(Player * player) {
-    if(player->alive == 0) {
-        return 0;
-    }
-    int total = 0;  //玩家资产
-    //玩家所有的地产包含的资产
+    printf("资金：%d\n", player->fund);
+    printf("点数：%d\n", player->points);
+    printf("地产：\n");
+    printf("\t地点\t等级\t价格\n");
     for(int i = 0; i < MAX_MAP_NUM; i++) {
-        if(map[i].whose == player->id) {
-            total += map[i].price * (map[i].level + 1) * 2;
+        if(player->house[i] >= 0) {
+            printf("\t%d\t%d", i, player->house[i]);
+            printf("\t%d", map[i].price);
+            putchar('\n');
         }
     }
-    //玩家现在的资产
-    total += player->fund;
-    return total;
+    printf("道具：\n");
+    printf("\t路障: %d\n", player->toolnum[1]);
+    printf("\t机器娃娃: %d\n", player->toolnum[2]);
+    printf("\t炸弹: %d\n", player->toolnum[3]);
+    return 0;
 }
 
 /*

@@ -76,13 +76,25 @@ void setBuff(char*arg2,char*arg3)
     players[index].buff = atoi(arg3);
 }
 void setMap(char*arg2,char*arg3,char*arg4)
-{
+{   
+    if(atoi(arg2) >= 70) {
+        printf("位置超出限制");
+        return ;
+    }
+    if(atoi(arg4) > 3) {
+        printf("等级设置错误\n");
+        return ;
+    }
+    
     int index = searchIndex(arg3);
     map[atoi(arg2)].whose = players[index].id;
     map[atoi(arg2)].level = atoi(arg4);
+    players[index].house[atoi(arg2)] = atoi(arg4);
 }
 void setUnmap(char*arg2)
 {
+    int index = searchIndexfromId(map[atoi(arg2)].whose);
+    players[index].house[atoi(arg2)] = -1;
     map[atoi(arg2)].whose = 0;
     map[atoi(arg2)].level = 0;
 }
