@@ -148,6 +148,7 @@ int Dump_One_Player(FILE* fp, Player *p, int PlayerNumber, char*file_path){
 
         if(searchIndex(P_Order + i + 1) == -1) //玩家死亡或者位初始化
         {
+            index=searchIndex(P_Order+i+1);
             fprintf(fp, "%c\n",P_Order[i+1]);
             char line[50];
             sprintf(line, "alive %d",0 );
@@ -179,7 +180,7 @@ int Dump_One_Player(FILE* fp, Player *p, int PlayerNumber, char*file_path){
             fprintf(fp, "%s\n",line);
             memset(line,0,sizeof(line));
 
-            sprintf(line, "userloc %d",0 );
+            sprintf(line, "userloc %d", (p+index)->loc);
             fprintf(fp, "%s\n",line);
             memset(line,0,sizeof(line));
                 

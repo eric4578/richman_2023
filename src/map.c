@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include"map.h"
 #include"Player.h"
+extern int prid;
+extern Player players[MAX_PLAYER_NUM];
 mapnode map[MAX_MAP_NUM];
 int initMap()
 {
@@ -68,6 +70,7 @@ int printUser(Player* player) {
 
 int printNode(mapnode node)//根据打印的地点打印单个字符
 {
+    // if(node.loc_id==players[prid]
     switch(node.color)
     {
         case RED:

@@ -155,6 +155,11 @@ int bomb(Player * player, int index) {
         return 0;
     }
     if(index != 0 && index <= 10 && index >= -10) {
+        if(map[(player->loc + index + 70) % 70].item[3]==1)
+        {
+            printf("不能将炸弹放到有炸弹的位置\n");
+            return 0;
+        }
         if((player->loc + index + 70) % 70 == HOSPITAL || (player->loc + index + 70) % 70 == PRISON) {
             printf("不能将炸弹放到医院或者监狱\n");
         }
@@ -172,6 +177,9 @@ int bomb(Player * player, int index) {
             updateMapNode((player->loc + index + 70) % 70);
         }
     }
+    else{
+        printf("不能放在大于或者小于10的地方或者自己脚下\n");
+    }
     return 0;
 }
 
@@ -181,8 +189,14 @@ int block(Player * player, int index) {
         return 0;
     }
     if(index != 0 && index <= 10 && index >= -10) {
+        if(map[(player->loc + index + 70) % 70].item[1]!=0)
+        {
+            printf("不能将路障放到有路障的位置\n");
+            return 0;
+        }
+        
         if((player->loc + index + 70) % 70 == HOSPITAL || (player->loc + index + 70) % 70 == PRISON) {
-            printf("不能将炸弹放到医院或者监狱\n");
+            printf("不能将路障放到医院或者监狱\n");
         }
         else if(map[(player->loc + index + 70) % 70].user[0] == 'Q' || 
                 map[(player->loc + index + 70) % 70].user[0] == 'A' ||
@@ -197,6 +211,9 @@ int block(Player * player, int index) {
             player->toolnum[0]--;
             updateMapNode((player->loc + index + 70) % 70);
         }
+    }
+    else{
+        printf("不能放在大于或者小于10的地方或者自己脚下\n");
     }
     return 0;
 }

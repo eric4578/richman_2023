@@ -9,13 +9,14 @@
 #define BOMB 3
 extern mapnode map[MAX_MAP_NUM];//地图
 Player players[MAX_PLAYER_NUM]; //玩家
+int prid;
 int main(int argc,char*argv[]) {
     /*游戏初始化*/
     initMap();
     //printMap();
     start(players);
     int round=0;//游戏回合数，
-    int prid=0;//记录当前玩家的id,是0到PlayerNumber-1之间的整数,初始置0
+    prid=0;//记录当前玩家的id,是0到PlayerNumber-1之间的整数,初始置0
     int PlayerNumber=getPlayerNumber();//玩家数目
     int i=0,j=0;
     for(i=0;i<PlayerNumber;i++)
@@ -109,9 +110,15 @@ int main(int argc,char*argv[]) {
         } 
         else if (strcmp(action, "step") == 0) {//step指令
             step((players+prid),atoi(arg1));
+            if((players+prid)->buff>0)
+            {
+                (players+prid)->buff-=1;
+                printUser((players+prid));
+                printf("剩余buff:%d\n", (players+prid)->buff);
+            }
             prid=(prid+1)%PlayerNumber;
             /*更新角色状态*/
-            if(players[prid].stop>0){
+            while(players[prid].stop>0){
                 updatePlayer(players+prid);
                 prid=(prid+1)%PlayerNumber;
                 continue;

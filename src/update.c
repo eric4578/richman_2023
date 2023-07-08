@@ -99,6 +99,7 @@ int step(Player*player,int step)
     {
         payRent(player->id,map[player->loc].whose);//支付租金，金额转移
     }
+    if(player->alive == 0) return 0;
     //判断新地是否有主,有则询问是否购买
     buyLand(player, player->loc); 
     updateMapNode(player->loc);
@@ -108,12 +109,12 @@ int step(Player*player,int step)
 /*更新角色状态*/
 int updatePlayer(Player*player)
 {
-    if(player->buff>0)
-    {
-        player->buff-=1;
-        printUser(player);
-        printf("剩余buff:%d\n", player->buff);
-    }
+    // if(player->buff>0)
+    // {
+    //     player->buff-=1;
+    //     printUser(player);
+    //     printf("剩余buff:%d\n", player->buff);
+    // }
     if(player->stop>0)
     {
         player->stop-=1;
@@ -167,17 +168,7 @@ int payRent(int from,int to)
         
         else if(players[from_index].fund<rent)//玩家破产
         {
-            players[from_index].alive=0;
-            players[from_index].id=0;
-            players[from_index].fund=0;
-            for(int i=0;i<MAX_MAP_NUM;i++)
-                players[from_index].house[i]=-1;
-            players[from_index].buff=0;
-            players[from_index].loc=0;
-            for(int i=0;i<MAX_TOOL_NUM;i++)
-                players[from_index].toolnum[i]=0;
-            players[from_index].points=0;
-            players[from_index].stop=0;
+            dead(players+from_index);
         }
     }
     else
@@ -186,7 +177,33 @@ int payRent(int from,int to)
     }
 }
 
-
+int dead(Player*player)
+{
+    for(int i=0;i<MAX_PLAYER_NUM;i++)
+    {
+        map[player->loc].user[i]=map[player->loc].user[i+1];
+    }
+    
+    player->alive=0;
+    //player->id=0;
+    player->fund=0;
+    player->buff=0;
+    // player->loc=0;
+    for(int i=0;i<MAX_TOOL_NUM;i++)
+        player->toolnum[i]=0;
+    player->points=0;
+    player->stop=0;
+    for(int i=0;i<MAX_MAP_NUM;i++)
+    {
+        if(player->house[i]!=-1)
+        {
+            player->house[i]=-1;
+            map[i].whose=0;
+            map[i].level=-1;
+            updateMapNode(i);
+        }
+    }
+}
 
 int getGift(Player*player)
 {
