@@ -71,12 +71,13 @@ class Test:
                 if '_r' in file_name:
                     continue
 
-                f_dict["path"] = self._TestOutPath + file_name.replace(self._testCasePath, "") + "_r.out"
+                f_dict["path"] = self._TestOutPath + file_name.replace("TestCase", "") + "_r.out"
+                # print(f_dict["path"])
                 try:
                     with open(file_name + '.in', 'r') as in_file:
                         f_dict["input"] = in_file.readlines()
                     with open(file_name + '.out', 'r') as out_file:
-                        f_dict["expected_output"] = ''.join(out_file.readlines())
+                        f_dict["expected_output"] = ''.join(out_file.readlines()).strip()
                 except FileNotFoundError as err:
                     self.__print_warn_info(self, f"{err}")
 
@@ -119,7 +120,7 @@ class Test:
         if printPath:
             print(f'{self._colors[1]}Test failed! test_case_path:{self._testCasePath}, output_path:{_input["path"]}{self._colors[3]}')
         else:
-            print(f'{self._colors[1]}Test failed! input:{_input["input"]}, expected_output:{repr(["expected_output"])}, actual_output:{repr(_actual)}{self._colors[3]}')
+            print(f'{self._colors[1]}Test failed! input:{_input["input"]}, expected_output:{repr(_input["expected_output"])}, actual_output:{repr(_actual)}{self._colors[3]}')
 
     @__print_test_name()
     def __print_error_info(self, msg:str) -> None:
@@ -150,23 +151,25 @@ class Test:
             else:
                 output += f"{self._colors[1]}{char2}{self._colors[3]}"
             i += 1
-
-        if i < len(str2):
-            output += [_ for _ in range(i, len(str2))]
         
         return False, output
 
     def __run_test(self, _data:list) -> str: # run single test
         p = subprocess.Popen([self._filePath, _data["path"]], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        print(_data["path"])
         try:
             for i, item in enumerate(_data["input"]):
                 p.stdin.write((item + '\n').encode())
-                p.stdin.flush()
+            # os.system(f"echo {''.join(_data['input'])} | {self._filePath} {_data['path']} > /dev/null")
 
             _stdout, _ = p.communicate()
+            # p.stdin.write(('\n').encode())
+            # p.stdin.flush()
+            # p.stdout.flush()
             p.stdin.close()
             p.stdout.close()
-
+            # print(_stdout.decode())
+            time.sleep(1)
             _dump_out = ""
             try:
                 with open(_data["path"], 'r') as out_obj:
@@ -175,9 +178,10 @@ class Test:
                 self.__print_warn_info(self, f"{err}")
 
             if self._DoneFunc:
+                # time.sleep(0.1)
                 self._DoneFunc()
             
-            return _dump_out
+            return _dump_out.strip()
         except BrokenPipeError:
             self.__print_warn_info(self, "Running warn:[BrokenPipeError]. Other tasks not terminated!")
             return ""
@@ -185,6 +189,7 @@ class Test:
     def create_test_tasks(self, parallel:bool = False, concise:bool = False, printPath:bool = True) -> None: # create test tasks, tesk num = self._testNum
         self._successNum = 0
         if parallel:
+            self._results = []
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 self._results = executor.map(self.__run_test, [test for test in self._tests])
                 self._results = list(self._results)
@@ -192,7 +197,7 @@ class Test:
             self._results = [self.__run_test(_) for _ in self._tests]
 
         for test, output in zip(self._tests, self._results):
-            if output == test["expected_output"]:
+            if output.strip() == test["expected_output"].strip():
                 self._successNum += 1
 
                 if concise:
@@ -204,115 +209,6 @@ class Test:
         
         self.__print_finish_info(self)
 
-
-class TestUnitTest(Test):
-    '''
-    unit test test
-    Test whether the unit test module is normal.
-    '''
-
-    def __init__(self, filePath:str, testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None) -> None:
-        super().__init__(filePath, "TestUnitTest", testNum, hasIllegal, ErrorRate, TestCasePath, DoneFunc)
-        self.__default_tests()
-        if not hasIllegal:
-            self._weights = [1, 0]
-            self._ErrorRate = 0
-
-    
-    def __default_tests(self) -> None:
-        self._tests = [
-            {"path":f"./dump.out", "input":["1", "50", "0"], "expected_output": "1\n50\n0\n"},
-        ]
-
-    def gen_test(self) -> None:
-        self._tests = []
-
-        for i in range(self._testNum):
-            rinta = str(random.randint(1, 10))
-            rintb = str(random.randint(1, 10))
-            rintc = str(random.randint(1, 10))
-            self._tests.append({})
-            self._tests[i] = {"path":f"./dump.out", "input": [rinta, rintb, rintc], "expected_output": rinta + ' ' + rintb + ' ' + rintc + '\n'}
-
-
-class TestPointStore(Test): # test for point store
-    '''
-    point store test
-    input:one purchase operation, format: operation present_points present_item_num
-    output: ["点数不足，退出道具房\n", "退出道具房\n", "道具已满\n", "已购买xxx\n", f"已购买xxx\n点数不足，退出道具房\n", "非法输入\n", "点数不足，购买失败\n"]
-    example: input:['1', '50', '0'], expected_output:['已购买路障\n点数不足，退出道具房\n']
-    '''
-
-    def __init__(self, filePath:str, testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None) -> None:
-        super().__init__(filePath, "TestPointStore", testNum, hasIllegal, ErrorRate, TestCasePath, DoneFunc)
-        self.__default_tests()
-        if not hasIllegal:
-            self._weights = [1, 0]
-            self._ErrorRate = 0
-
-    def __default_tests(self) -> None:
-        self._tests = [
-            {"path":"", "input":["1", "50", "0"], "expected_output":"已购买路障\n点数不足，退出道具房\n"},
-        ]
-    
-    def gen_test(self) -> None: # generate special test
-        self.__gen_input()
-        self.__gen_expected_output()
-
-    def __gen_input(self) -> None:
-        self.tools = [['1', '2', '3'], ['-1', '0', '4', '1.23', '3.44']]
-        self.quit = [['F', 'f'], ['a', 'b', '#', 'q', '@']]
-        self.points = [(0, 200), (-5, -1)]
-        self.tools_num = [(0, 10), (-5, -1), (11, 15)]
-
-        self._tests = []
-        for i in range(self._testNum):
-            self._tests.append({})
-            input = ""
-
-            # there is a 60% probability of generating numbers and a 40% probability of generating 'f'
-            if random.uniform(0, 1) > 0.4: 
-                tools_range = random.choices(self.tools, self._weights)[0]
-                input = random.choice(tools_range)
-            else:
-                quit_range = random.choices(self.quit, self._weights)[0]
-                input = random.choice(quit_range)
-
-            # generate points
-            points_range = random.choices(self.points, self._weights)[0]
-            points = random.randint(*points_range)
-
-            # generate the number of tools
-            tools_num_range = random.choices(self.tools_num, [1 - self._ErrorRate, 0.5 * self._ErrorRate, 0.5 * self._ErrorRate])[0]
-            tools_number = random.randint(*tools_num_range)
-
-            self._tests[i]["input"] = [input, str(points), str(tools_number)]
-            self._tests[i]["path"] = ""
-    
-    def __gen_expected_output(self) -> None:
-        self._point = [50, 30, 50]
-        self._item = ["路障", "机器娃娃", "炸弹"]
-
-        for test in self._tests:
-            if int(test["input"][1]) < 30: # insufficient points, exiting the store
-                test["expected_output"] = "点数不足，退出道具房\n"
-            elif test["input"][0].lower() == 'f': # input 'f'
-                test["expected_output"] = "退出道具房\n"
-            elif len(test["input"][0]) == 1 and test["input"][0].isdigit(): # input 1 or 2 or 3
-                if int(test["input"][2]) >= 10: # full item
-                    test["expected_output"] = "道具已满\n"
-                elif 0 <= int(test["input"][2]) < 10: # can buy item
-                    if int(test["input"][1]) - self._point[int(test["input"][0]) - 1] >= 30: 
-                        # sufficient points and remaining after purchase
-                        test["expected_output"] = f"已购买{self._item[int(test['input'][0]) - 1]}\n"
-                    elif 30 > int(test["input"][1]) - self._point[int(test["input"][0]) - 1] >= 0: 
-                        # Enough points, but not enough to buy again after purchase, automatic exit
-                        test["expected_output"] = f"已购买{self._item[int(test['input'][0]) - 1]}\n点数不足，退出道具房\n"
-                    else:
-                        test["expected_output"] = "点数不足，购买失败\n"
-            else:
-                test["expected_output"] = "非法输入\n"
-            
 
 class NormalTest(Test):
     def __init__(self, filePath:str, testName:str="", testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None) -> None:
@@ -326,24 +222,6 @@ class NormalTest(Test):
         self._tests = [
             {"path":"", "input":[], "expected_output":""}
         ]
-
-
-def _test(path:str, DoneFunc = None) -> None:
-    print(f"{Fore.LIGHTCYAN_EX}Running script self check...{Fore.RESET}")
-    os.system(f"gcc ./{path}/UnitTestExample/Example.c -o ./{path}/UnitTestExample/Example")
-    _test = TestUnitTest(filePath=f"./{path}/UnitTestExample/Example", testNum=10, DoneFunc=DoneFunc)
-    _test.gen_test()
-    _test.create_test_tasks(parallel=False, concise=True)
-
-    _test.read_test_case(TestCasePath=f"./{path}/UnitTestExample")
-    _test.create_test_tasks(parallel=False, concise=True)
-    
-    os.system(f"rm ./dump.out")
-    os.system(f"rm ./{path}/UnitTestExample/Example")
-    os.system(f"rm {_test._testCasePath}/TestCase_Print/Example1_r.out")
-    os.system(f"rm {_test._testCasePath}/TestCase_Print/Example2_r.out")
-    
-    print(f"{Fore.LIGHTCYAN_EX}Finished.{Fore.RESET}")
 
 
 def SingleCommandTest(program_path:str, case_path:str, DoneFunc = None) -> None:
@@ -367,10 +245,15 @@ def main():
     program_path = sys.argv[1]
     case_path = sys.argv[2][:-1] if sys.argv[2].endswith('/') else sys.argv[2]
 
-    with alive_bar(total=42, title="total progress") as bar:
-        _test(case_path, bar)
+    os.system(f"cp -r {case_path}/TestCase_Print {program_path.replace('richman', '')}")
+
+    with alive_bar(total=30, title="total progress") as bar:
         SingleCommandTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
     
 
 if __name__ == '__main__':
+    if platform.system() == "Windows":
+        os.system("cls")
+    else:
+        os.system("clear")
     main()

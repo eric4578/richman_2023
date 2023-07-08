@@ -41,3 +41,5 @@ buff 0
 stop 0
 userloc 0
 MAP
+mapuser 0 QA
+mapuser 48 S

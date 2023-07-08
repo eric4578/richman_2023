@@ -1,33 +1,34 @@
 #include "start.h"
-
+#include"global.h"
 /*游戏一开始最先调用的函数*/
-Player* start()
+int start(Player*players)
 {
     char s[5] = "\0";
+    int flag=-1;
     int fund = get_set_fund();
-    Player *player = NULL;
-    while (player == NULL)
-    {   
-        //printf("请输入角色：\n");
+    printf("请输入角色：\n");
+    while(flag==-1){//输入错误会让重输
         scanf("%s", s);
-        player = set_init_role(s);
+        flag=set_init_role(players,s);
     }
-    set_init_fund(player,fund);
-    return player;
+    set_init_fund(players,fund);
+    
 }
 
 /*设置初始资金*/
 void set_init_fund(Player *player, int fund)
 {
-    int id=player->id;
-    do{
-        player->fund=fund;
-        player=player->next;
-    }while (player->id!=id);
+    for(int i=0;i<MAX_PLAYER_NUM;i++)
+    {
+        if(player[i].alive==1)
+        {
+            (player+i)->fund=fund;
+        }
+    }
 }
 
 /*设置初始角色，传入一组数字字符,返回角色指针*/
-Player *set_init_role(char *s)
+int set_init_role(Player*players,char*s)
 {
     // isdigital
     char *c = s;
@@ -36,36 +37,48 @@ Player *set_init_role(char *s)
         if (!isdigit(*c))
         {
             printf("非法输入\n");
-            return NULL;
+            return -1;
         }
         c++;
+    }
+    if(!isUniqueChars(s)) 
+    {
+        printf("非法输入\n");
+        return -1;
     }
     // num is not in [2,4]
     int num = strlen(s);
     if (num < 2 || num > 4)
     {
         printf("玩家必须要2-4人\n");
-        return NULL;
+        return -1;
     }
-    // 设置role,构建循环链表
-    else
-    {
+    else{
         PlayerNumber=num;
-        Player *player = (Player *)malloc(sizeof(Player));
-        player->next = player;
-        initPlayer(player, (*s) - '0');
-        Player *p = player, *q = NULL;
-        for (int i = 0; i < num - 1; i++)
+        for(int i=0;i<PlayerNumber;i++)
         {
-            q = (Player *)malloc(sizeof(Player));
-            q->next = p->next;
-            p->next = q;
-            p=q;
-            initPlayer(q, *(++s) - '0');
-            
+            int id=*(s+i)-'0';
+            // if(id-1!=i) {(players+i)->alive=0;}
+            // else {initPlayer((players+i),id);s++;}
+            initPlayer(players+i,id);
         }
-        return player;
+        return 0;
     }
+}
+
+/*判断各不相同*/
+int isUniqueChars(char *str) {
+    int length = strlen(str);
+    
+    for (int i = 0; i < length - 1; i++) {
+        for (int j = i + 1; j < length; j++) {
+            if (str[i] == str[j]) {
+                return 0; // 如果有相同的字符，返回0表示不唯一
+            }
+        }
+    }
+    
+    return 1; // 如果没有相同的字符，返回1表示唯一
 }
 
 /*初始化player参数的函数，为了以后方便添加做的*/
@@ -74,6 +87,12 @@ void initPlayer(Player *player, int id)
     player->id = id;
     player->points = 0;
     player->fund=0;
+    player->buff=0;
+    player->alive=1;
+    player->stop=0;
+    player->loc=0;
+    for(int i=0;i<MAX_MAP_NUM;i++)
+        player->house[i]=-1;
     for (int i = 0; i < 4; i++)
         player->toolnum[i] = 0;
 }
@@ -85,7 +104,7 @@ int get_set_fund()
 
     while (1)
     {
-        //printf("设置初始资金");
+        printf("设置初始资金");
         fflush(stdout);
 
         char input[100];
@@ -114,17 +133,10 @@ int get_set_fund()
             printf("输入不符合要求，请重新输入。\n");
         }
     }
-    return 0;
+    return num;
 }
 
-/*释放player*/
-void freePlayer(Player*p)
+int getPlayerNumber()
 {
-    Player *q=p->next;
-    for(int i=0;i<PlayerNumber;i++)
-    {
-        q=p->next;
-        free(p);
-        p=q;
-    }
+    return PlayerNumber;//返回静态变量
 }

@@ -1,0 +1,42 @@
+[
+{
+  "directory": "/home/lighthouse/dir/richman_2023/build",
+  "command": "/usr/bin/gcc  -I/home/lighthouse/dir/richman_2023/./include -g -std=gnu11 -o CMakeFiles/richman.dir/main.c.o -c /home/lighthouse/dir/richman_2023/main.c",
+  "file": "/home/lighthouse/dir/richman_2023/main.c"
+},
+{
+  "directory": "/home/lighthouse/dir/richman_2023/build",
+  "command": "/usr/bin/gcc  -I/home/lighthouse/dir/richman_2023/./include -g -std=gnu11 -o CMakeFiles/richman.dir/src/Player.c.o -c /home/lighthouse/dir/richman_2023/src/Player.c",
+  "file": "/home/lighthouse/dir/richman_2023/src/Player.c"
+},
+{
+  "directory": "/home/lighthouse/dir/richman_2023/build",
+  "command": "/usr/bin/gcc  -I/home/lighthouse/dir/richman_2023/./include -g -std=gnu11 -o CMakeFiles/richman.dir/src/func.c.o -c /home/lighthouse/dir/richman_2023/src/func.c",
+  "file": "/home/lighthouse/dir/richman_2023/src/func.c"
+},
+{
+  "directory": "/home/lighthouse/dir/richman_2023/build",
+  "command": "/usr/bin/gcc  -I/home/lighthouse/dir/richman_2023/./include -g -std=gnu11 -o CMakeFiles/richman.dir/src/map.c.o -c /home/lighthouse/dir/richman_2023/src/map.c",
+  "file": "/home/lighthouse/dir/richman_2023/src/map.c"
+},
+{
+  "directory": "/home/lighthouse/dir/richman_2023/build",
+  "command": "/usr/bin/gcc  -I/home/lighthouse/dir/richman_2023/./include -g -std=gnu11 -o CMakeFiles/richman.dir/src/start.c.o -c /home/lighthouse/dir/richman_2023/src/start.c",
+  "file": "/home/lighthouse/dir/richman_2023/src/start.c"
+},
+{
+  "directory": "/home/lighthouse/dir/richman_2023/build",
+  "command": "/usr/bin/gcc  -I/home/lighthouse/dir/richman_2023/./include -g -std=gnu11 -o CMakeFiles/richman.dir/src/test.c.o -c /home/lighthouse/dir/richman_2023/src/test.c",
+  "file": "/home/lighthouse/dir/richman_2023/src/test.c"
+},
+{
+  "directory": "/home/lighthouse/dir/richman_2023/build",
+  "command": "/usr/bin/gcc  -I/home/lighthouse/dir/richman_2023/./include -g -std=gnu11 -o CMakeFiles/richman.dir/src/tool.c.o -c /home/lighthouse/dir/richman_2023/src/tool.c",
+  "file": "/home/lighthouse/dir/richman_2023/src/tool.c"
+},
+{
+  "directory": "/home/lighthouse/dir/richman_2023/build",
+  "command": "/usr/bin/gcc  -I/home/lighthouse/dir/richman_2023/./include -g -std=gnu11 -o CMakeFiles/richman.dir/src/update.c.o -c /home/lighthouse/dir/richman_2023/src/update.c",
+  "file": "/home/lighthouse/dir/richman_2023/src/update.c"
+}
+]

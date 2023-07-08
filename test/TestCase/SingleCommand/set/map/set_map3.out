@@ -41,6 +41,7 @@ buff 0
 stop 0
 userloc 0
 MAP
+mapuser 0 QAS
 map 5 S 2
 map 48 Q 1
 map 50 S 3

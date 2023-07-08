@@ -1,31 +1,15 @@
 #include"tool.h"
-
+#include"map.h"
+extern mapnode map[MAX_MAP_NUM];
 int buyTool(Player* player)
 {
     char ch=' ';
-    int i=0;//一次性测试用
-    //printf("欢迎来到道具屋，请选择你需要的道具:");
+    char input[100];
+    //fgets(input, sizeof(input), stdin);
+    printf("欢迎来到道具屋，请选择你需要的道具:");
     while (ch!='F'&&ch!='f')
     {
-        /*假设一次只能购买一个道具的代码*/
-        if(i<1)
-        {
-        scanf("%c", &ch);
-        scanf("%d", &(player->points));
-        scanf("%d", &(player->toolnum[0]));
-        //为了防误触
-        char input[100];
-        fgets(input, sizeof(input), stdin);
-        }
-
         /*可以购买多个的代码*/
-        // scanf("%c", &ch);
-        // scanf("%d", &(player->points));
-        // scanf("%d", &(player->toolnum[0]));
-        // char input[100];
-        // fgets(input, sizeof(input), stdin);
-        // i=0;
-
         /*点数不足*/
         if(player->points<30)
         {
@@ -36,10 +20,13 @@ int buyTool(Player* player)
         else if(ch=='F'||ch=='f') break;
         /*购买单件*/
         else 
-        {   if(i>=1) return 0;
+        {   
+            scanf("%c", &ch);
+            char input[100];
+            fgets(input, sizeof(input), stdin);
+
             buy_one_tool(player,ch);
         }
-        i++;
     }
     printf("退出道具房\n");
     return 0;
@@ -74,6 +61,7 @@ void buy_one_tool(Player*player,char ch)
 void buyBlock(Player*player)
 {
     printf("已购买路障\n");
+    player->toolnum[0]++;
     player->toolnum[1]++;
     player->points-=50;
 }
@@ -81,6 +69,7 @@ void buyBlock(Player*player)
 void buyRobot(Player*player)
 {
     printf("已购买机器娃娃\n");
+    player->toolnum[0]++;
     player->toolnum[2]++;
     player->points-=30;
 }
@@ -88,6 +77,21 @@ void buyRobot(Player*player)
 void buyBomb(Player*player)
 {
     printf("已购买炸弹\n");
+    player->toolnum[0]++;
     player->toolnum[3]++;
     player->points-=50;
+}
+
+int solve_Bomb(Player*player,int index)
+{
+    map[index].item[3]=0;//记得换成宏
+    player->loc=HOSPITAL;
+    player->stop=3;
+    return 3;
+}
+int solve_Block(Player*player,int index)
+{
+    map[index].item[1]=0;//记得换成宏
+    player->loc=index;
+    return 1;
 }

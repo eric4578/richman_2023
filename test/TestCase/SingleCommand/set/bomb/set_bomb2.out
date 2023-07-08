@@ -41,4 +41,5 @@ buff 0
 stop 0
 userloc 0
 MAP
-item 15 2
+mapuser 0 QAS
+item 15 3
