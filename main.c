@@ -14,6 +14,8 @@ int BuffLoc;
 int BuffStay;
 int BuffFlushRound;
 int round;
+int alivenum;
+
 int main(int argc,char*argv[]) {
 
     BuffFlushRound = BUFF_START;
@@ -27,6 +29,7 @@ int main(int argc,char*argv[]) {
     BuffLoc=BUFF_START;
     int buff_round=0;
     int PlayerNumber=getPlayerNumber();//玩家数目
+    alivenum = PlayerNumber;
     int i=0,j=0;
     for(i=0;i<PlayerNumber;i++)
     {
@@ -270,7 +273,7 @@ int main(int argc,char*argv[]) {
         }
         else if (strcmp(action, "robot") == 0)
         {
-            robot(players+prid);
+            robot(players + prid);
         }
         // else if (strcmp(action, "bomb") == 0)
         // {

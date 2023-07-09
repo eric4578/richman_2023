@@ -12,6 +12,7 @@ extern int round;
 extern int BuffLoc;
 extern int BuffStay;
 extern int BuffFlushRound;
+extern int alivenum;
 /*step函数*/
 int step(Player*player,int step)
 {
@@ -201,6 +202,7 @@ int payRent(int from,int to)
 
 int dead(Player*player)
 {
+    alivenum--;
     for(int i=0;i<MAX_PLAYER_NUM;i++)
     {
         map[player->loc].user[i]=map[player->loc].user[i+1];
@@ -223,6 +225,14 @@ int dead(Player*player)
             map[i].whose=0;
             map[i].level=-1;
             updateMapNode(i);
+        }
+    }
+    if(alivenum == 1) {
+        for(int i = 0; i < MAX_PLAYER_NUM; i++) {
+            if(players[i].alive == 1) {
+                printf("%s赢了\n", NAME_FROM_ID[player[i].id]);
+                exit(0);
+            }
         }
     }
 }
