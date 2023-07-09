@@ -196,7 +196,7 @@ int block(Player * player, int index) {
             printf("不能将路障放到有路障的位置\n");
             return 0;
         }
-        else if(map[(player->loc + index + 70) % 70].item[1]==BuffLoc)
+        else if((player->loc + index + 70) % 70==BuffLoc)
         {
             printf("不能将路障放到有财神buff的位置\n");
             return 0;
