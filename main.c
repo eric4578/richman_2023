@@ -119,7 +119,16 @@ int main(int argc,char*argv[]) {
                 printf("剩余buff:%d\n", (players+prid)->buff);
             }
             prid=(prid+1)%PlayerNumber;
-            if(prid==0) round+=1;
+            if(prid==0) {
+                round+=1;
+                if(round==10)
+                {
+                    
+                    BuffLoc=randomBuffLoc();
+                    printf("财神降临到了%d的位置\n",BuffLoc);
+                    updateMapNode(BuffLoc);
+                }
+            }
             /*更新角色状态*/
             // while(players[prid].stop>0){
             //     updatePlayer(players+prid);
