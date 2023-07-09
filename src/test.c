@@ -330,8 +330,10 @@ int dump_file(Player* p, int PlayerNumber, int preuser, char*file_path){
         fprintf(fp, "%s\n",line);
     }
     if(BuffLoc>=0)
-    {
+    {   
+        printf("loc:%d\n", BuffLoc);
         sprintf(line,"mapgod %d %d",BuffLoc,BuffStay);
+        fprintf(fp, "%s\n",line);
     }
     fclose(fp);
     return 0;
