@@ -329,6 +329,10 @@ int dump_file(Player* p, int PlayerNumber, int preuser, char*file_path){
         sprintf(line,"item %d %d",i,item_t);
         fprintf(fp, "%s\n",line);
     }
+    if(BuffLoc>=0)
+    {
+        sprintf(line,"mapgod %d %d",BuffLoc,BuffStay);
+    }
     fclose(fp);
     return 0;
 

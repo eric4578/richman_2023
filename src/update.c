@@ -17,6 +17,7 @@ extern int alivenum;
 int step(Player*player,int step)
 {
     int i=0,flag=0;
+    int old_loc=player->loc;
     step=step%MAX_MAP_NUM;
     //有没有道具
     for(i=1;i<=step;i++)
@@ -85,29 +86,27 @@ int step(Player*player,int step)
     {
         buyTool(player);
     }
-    //捡到财神buff
-    else if(player->loc==BuffLoc)
-    {
-        //round=0;
-        player->buff+=5;
-        
-
-        //Buff消失
-        int oldbuffloc=BuffLoc;
-        BuffLoc = BUFF_CATCH; 
-
-        BuffStay=5;
-
-        updateMapNode(oldbuffloc);
-        //BuffLoc=-1;
-        printf("得到财神buff\n");
-    }
     //是否为矿地
     else if(player->loc<MAX_MAP_NUM&&player->loc>=(MAX_MAP_NUM-6))
     {
         int point=get_Mine_points(player->loc);
         player->points+=point;
         printf("进入矿地获得点数：%d\n",point);
+    }
+    for(int k=1;k<=step;k++)
+    {
+        if(old_loc+k==BuffLoc)
+       {
+        //round=0;
+        player->buff+=5;
+        //Buff消失
+        int oldbuffloc=BuffLoc;
+        BuffLoc = BUFF_CATCH; 
+        BuffStay=5;
+        updateMapNode(oldbuffloc);
+        printf("得到财神buff\n");
+        break;
+       }
     }
     //是否交租金
     if(map[player->loc].whose!=0&&map[player->loc].whose!=player->id)
@@ -230,7 +229,7 @@ int dead(Player*player)
     if(alivenum == 1) {
         for(int i = 0; i < MAX_PLAYER_NUM; i++) {
             if(players[i].alive == 1) {
-                printf("%s赢了\n", NAME_FROM_ID[player[i].id]);
+                printf("%s赢了\n", NAME_FROM_ID[players[i].id]);
                 exit(0);
             }
         }
