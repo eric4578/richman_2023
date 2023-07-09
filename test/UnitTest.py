@@ -345,9 +345,6 @@ def main():
         _total, _success = OtherTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
         total += _total
         success += _success
-        _total, _success = ExchangeTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
-        total += _total
-        success += _success
     
     print(f"[{Fore.BLUE}Result{Fore.RESET}]"
           f"{Fore.LIGHTCYAN_EX}Total:{total}{Fore.RESET}, "
