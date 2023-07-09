@@ -11,15 +11,21 @@ extern mapnode map[MAX_MAP_NUM];//地图
 Player players[MAX_PLAYER_NUM]; //玩家
 int prid;
 int BuffLoc;
+int BuffStay;
+int BuffFlushRound;
 int round;
 int main(int argc,char*argv[]) {
+
+    BuffFlushRound = BUFF_START;
+    BuffFlushRound = get_buff_round();
     /*游戏初始化*/
     initMap();
     //printMap();
     start(players);
-    int round=0;//游戏回合数，
+    round=0;//游戏回合数，
     prid=0;//记录当前玩家的id,是0到PlayerNumber-1之间的整数,初始置0
-    BuffLoc=-1;
+    BuffLoc=BUFF_START;
+    int buff_round=0;
     int PlayerNumber=getPlayerNumber();//玩家数目
     int i=0,j=0;
     for(i=0;i<PlayerNumber;i++)
@@ -105,6 +111,14 @@ int main(int argc,char*argv[]) {
             {
                 setStop(arg2,arg3);
             }
+            else if(strcmp(arg1,"round")==0)
+            {
+                round=9;
+            }
+            else if(strcmp(arg1,"god")==0)
+            {
+                setGod(atoi(arg2));
+            }
             else
             {
                 printf("Warning:no such commond\n");
@@ -117,17 +131,53 @@ int main(int argc,char*argv[]) {
                 (players+prid)->buff-=1;
                 printUser((players+prid));
                 printf("剩余buff:%d\n", (players+prid)->buff);
+                if((players+prid)->buff==0)
+                {
+                    BuffLoc=BUFF_CATCH;
+                }
             }
             prid=(prid+1)%PlayerNumber;
             if(prid==0) {
-                round+=1;
-                if(round==10)
+                
+                round += 1;
+                //BuffFlushRound -= 1;
+
+                //刷新逻辑
+
+                //起始刷新逻辑
+                if(BuffLoc == BUFF_START)
                 {
-                    
-                    BuffLoc=randomBuffLoc();
+                    if (round == 10+BuffFlushRound) //刷新第十个回合的财神buff
+                    {
+                        BuffLoc=randomBuffLoc();
+                        printf("财神降临到了%d的位置\n",BuffLoc);
+                        updateMapNode(BuffLoc);
+                        BuffStay = 5;
+                    }
+                }
+                if (BuffLoc >= 0||BuffLoc==BUFF_CATCH)
+                {
+                    int flag=0;
+                    BuffStay--;
+                    //Buff消失，重新生成
+                    if (BuffStay == 0) {//等待刷新
+                        int oldbuffloc=BuffLoc;
+                        if(BuffLoc==BUFF_CATCH) flag=1;
+                        BuffLoc = BUFF_FLUSH; //BUFF等待刷新
+                        BuffFlushRound = get_buff_round();
+                        if(!flag)
+                            updateMapNode(oldbuffloc);//buff消失
+                        round=0;
+                    }
+                }
+                if(round==BuffFlushRound&&BuffLoc == BUFF_FLUSH)//开始刷新
+                {
+                    BuffLoc = randomBuffLoc();
                     printf("财神降临到了%d的位置\n",BuffLoc);
                     updateMapNode(BuffLoc);
+                    BuffStay = 5;
                 }
+                
             }
             /*更新角色状态*/
             // while(players[prid].stop>0){
@@ -153,14 +203,46 @@ int main(int argc,char*argv[]) {
             }
             prid=(prid+1)%PlayerNumber;
             if(prid==0) {
-                round+=1;
-                if(round==10)
+                
+                round += 1;
+                //BuffFlushRound -= 1;
+
+                //刷新逻辑
+
+                //起始刷新逻辑
+                if(BuffLoc == BUFF_START)
                 {
-                    
-                    BuffLoc=randomBuffLoc();
+                    if (round == 10+BuffFlushRound) //刷新第十个回合的财神buff
+                    {
+                        BuffLoc=randomBuffLoc();
+                        printf("财神降临到了%d的位置\n",BuffLoc);
+                        updateMapNode(BuffLoc);
+                        BuffStay = 5;
+                    }
+                }
+                if (BuffLoc >= 0||BuffLoc==BUFF_CATCH)
+                {
+                    int flag=0;
+                    BuffStay--;
+                    //Buff消失，重新生成
+                    if (BuffStay == 0) {//等待刷新
+                        int oldbuffloc=BuffLoc;
+                        if(BuffLoc==BUFF_CATCH) flag=1;
+                        BuffLoc = BUFF_FLUSH; //BUFF等待刷新
+                        BuffFlushRound = get_buff_round();
+                        if(!flag)
+                            updateMapNode(oldbuffloc);//buff消失
+                        round=0;
+                    }
+                }
+                if(round==BuffFlushRound&&BuffLoc == BUFF_FLUSH)//开始刷新
+                {
+                    BuffLoc = randomBuffLoc();
                     printf("财神降临到了%d的位置\n",BuffLoc);
                     updateMapNode(BuffLoc);
+                    BuffStay = 5;
                 }
+                
             }
             
             /*更新角色状态*/

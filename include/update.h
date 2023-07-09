@@ -12,4 +12,5 @@ int payRent(int from,int to);
 int updatePlayer(Player*player);
 int getGift(Player*player);
 int dead(Player*player);
+int get_buff_round();
 #endif

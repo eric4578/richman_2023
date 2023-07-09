@@ -10,6 +10,8 @@ extern mapnode map[MAX_MAP_NUM];
 extern Player players[MAX_PLAYER_NUM];
 extern int round;
 extern int BuffLoc;
+extern int BuffStay;
+extern int BuffFlushRound;
 /*step函数*/
 int step(Player*player,int step)
 {
@@ -82,12 +84,21 @@ int step(Player*player,int step)
     {
         buyTool(player);
     }
-    //见到财神buff
+    //捡到财神buff
     else if(player->loc==BuffLoc)
     {
-        round=0;
+        //round=0;
         player->buff+=5;
-        BuffLoc=-1;
+        
+
+        //Buff消失
+        int oldbuffloc=BuffLoc;
+        BuffLoc = BUFF_CATCH; 
+
+        BuffStay=5;
+
+        updateMapNode(oldbuffloc);
+        //BuffLoc=-1;
         printf("得到财神buff\n");
     }
     //是否为矿地
@@ -136,6 +147,14 @@ int get_roll_number()
     srand(time(NULL));
     // 生成随机数并打印
     return 1 + rand() % 6;
+}
+
+int get_buff_round()
+{
+    // 设置随机数生成器的种子为当前时间
+    srand(time(NULL));
+    // 生成随机数并打印
+    return  1+rand() % 10;
 }
 
 /*支付租金,输入玩家id*/

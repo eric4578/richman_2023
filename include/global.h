@@ -33,4 +33,7 @@
 #define LEVEL1 1
 #define LEVEL2 2
 #define LEVEL3 3
+#define BUFF_FLUSH -1
+#define BUFF_START -2
+#define BUFF_CATCH -3
 #endif

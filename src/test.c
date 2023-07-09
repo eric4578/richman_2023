@@ -4,6 +4,8 @@
 #include<string.h>
 extern mapnode map[MAX_MAP_NUM];
 extern Player players[MAX_PLAYER_NUM];
+extern int BuffLoc;
+extern int BuffStay;
 static char NameToIndex[MAX_PLAYER_NUM + 1][10] = { // 玩家id和玩家名字的映射关系，1234分别和用户建立角色时的1234相同
         "",
         "Q",
@@ -134,6 +136,14 @@ void setStop(char*arg2,char*arg3)
     int index = searchIndex(arg2);
     players[index].stop = atoi(arg3);
 }
+
+void setGod(int loc)
+{
+    BuffLoc=loc;
+    updateMapNode(BuffLoc);
+    printf("财神降临在%d的位置\n",BuffLoc);
+    BuffStay=5;
+}
 /*
     function:dump one player's related info into the file
     parameter : player info to be added
@@ -207,7 +217,7 @@ int Dump_One_Player(FILE* fp, Player *p, int PlayerNumber, char*file_path){
             fprintf(fp, "%s\n",line);
             memset(line,0,sizeof(line));
 
-            sprintf(line, "item3 %d",(p+index)->toolnum[3] );
+            sprintf(line, "item3 %d",0 );
             fprintf(fp, "%s\n",line);
             memset(line,0,sizeof(line));
 
@@ -215,7 +225,7 @@ int Dump_One_Player(FILE* fp, Player *p, int PlayerNumber, char*file_path){
             fprintf(fp, "%s\n",line);
             memset(line,0,sizeof(line));
 
-            sprintf(line, "stop %d",(p+index)->stop );
+            sprintf(line, "stop %d",0 );
             fprintf(fp, "%s\n",line);
             memset(line,0,sizeof(line));
 
