@@ -27,4 +27,4 @@ $PIP_PATH install -r requirements.txt
 
 rm -r $CASE_PRINT_PATH
 
-$PY_PATH UnitTest.py ../bin/richman TestCase/
+$PY_PATH UnitTest.py ../bin/rich.exe TestCase/

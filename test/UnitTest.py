@@ -289,7 +289,7 @@ def ExchangeTest(program_path:str, case_path:str, DoneFunc = None) -> list[int, 
     print(f"{Fore.LIGHTCYAN_EX}Running Exchange test...{Fore.RESET}")
     _path = f"{case_path}/"
     test_content = {
-        "G4": "Gruop4", 
+        "group4_test": "Gruop4", 
     }
 
     for key, value in test_content.items():
@@ -333,7 +333,7 @@ def main():
     program_path = sys.argv[1]
     case_path = sys.argv[2][:-1] if sys.argv[2].endswith('/') else sys.argv[2]
 
-    os.system(f"cp -r ./{case_path}/TestCase_Print {program_path.replace('richman', '')}")
+    os.system(f"cp -r ./{case_path}/TestCase_Print {program_path.replace('rich.exe', '')}")
     total, success = 0, 0
     with alive_bar(total=100, title="total progress") as bar:
         _total, _success = SingleCommandTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
@@ -343,6 +343,9 @@ def main():
         total += _total
         success += _success
         _total, _success = OtherTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
+        total += _total
+        success += _success
+        _total, _success = ExchangeTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
         total += _total
         success += _success
     

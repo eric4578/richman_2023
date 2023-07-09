@@ -41,6 +41,7 @@ int initMap()
     //map[MAGICROOM].ch='M';
     //map[MAGICROOM].price=-1;
     map[0].ch='S';
+    map[0].price=-1;
     for(int i=64;i<MAX_MAP_NUM;i++)
     {
         map[i].ch='$';

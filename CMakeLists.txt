@@ -10,4 +10,4 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #设置编译的.c文件
 aux_source_directory(src/ test)
 #aux_source_directory(./ main)
-add_executable(richman  main.c ${test}  )
+add_executable(rich.exe  main.c ${test}  )

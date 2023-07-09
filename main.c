@@ -4,6 +4,7 @@
 #include"update.h"
 #include"map.h"
 #include"func.h"
+#include <ctype.h>
 #define BLOCK 1
 #define ROBOT 2
 #define BOMB 3
@@ -67,7 +68,16 @@ int main(int argc,char*argv[]) {
         // 去除指令末尾的换行符
         command[strcspn(command, "\n")] = '\0';
         // 解析指令和参数
+        memset(action, '\0', sizeof(action));
+        memset(arg1, '\0', sizeof(action));
+        memset(arg2, '\0', sizeof(action));
+        memset(arg3, '\0', sizeof(action));
+        memset(arg4, '\0', sizeof(action));
         sscanf(command, "%s %s %s %s %s", action, arg1,arg2,arg3,arg4);
+
+        for(int i = 0; i < strlen(action); ++i){
+            action[i] = tolower(action[i]);
+        }
 
         /* 根据解析的指令和参数执行相应的操作*/
         /*测试用指令*/
@@ -261,15 +271,27 @@ int main(int argc,char*argv[]) {
             continue;
         } 
         else if(strcmp(action, "sell") == 0)
-        {
-            sellLand(players+prid, atoi(arg1));
-            updateMapNode(atoi(arg1));
-            
+        {   
+            int flag = 0;
+            for(int i = 0; i < strlen(arg1); ++i){
+                if(arg1[i] < '0' || arg1[i] > '9'){
+                    flag = 1;
+                }
+                    
+            }
+            if(flag == 0){
+                sellLand(players+prid, atoi(arg1));
+                updateMapNode(atoi(arg1));
+            }
+ 
         }
         else if (strcmp(action, "block") == 0)
         {
-            block(players+prid, atoi(arg1));
-            updateMapNode((players + prid)->loc + atoi(arg1));
+            if(strlen(arg2) == 0){
+                block(players+prid, atoi(arg1));
+                updateMapNode((players + prid)->loc + atoi(arg1));
+            }
+            
         }
         else if (strcmp(action, "robot") == 0)
         {
