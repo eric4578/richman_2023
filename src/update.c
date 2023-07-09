@@ -229,7 +229,17 @@ int dead(Player*player)
     if(alivenum == 1) {
         for(int i = 0; i < MAX_PLAYER_NUM; i++) {
             if(players[i].alive == 1) {
-                printf("%s赢了\n", NAME_FROM_ID[players[i].id]);
+                // printf("%s\n", NAME_FROM_ID[players[i].id]);
+                printUser(&(players[i]));
+                putchar('\n');
+                printf("W                    W     IIIIIIIIIIII      NN        NN\n");
+                printf(" W                  W           II           NNN       NN\n");
+                printf("  W                W            II           NN NN     NN\n");
+                printf("   W              W             II           NN  NN    NN\n");
+                printf("    W      W     W              II           NN   NN   NN\n");
+                printf("     W    W W   W               II           NN    NN  NN\n");
+                printf("      W  W   W W                II           NN     NN NN\n");
+                printf("       W      W            IIIIIIIIIIII      NN      NNNN\n");
                 exit(0);
             }
         }
