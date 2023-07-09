@@ -32,12 +32,11 @@ class Test:
         self._DoneFunc = DoneFunc
         self._WarnOut = WarnOut
 
-
         if not os.path.exists(self._filePath):
             self.__print_error_info(self, "Fail to open file!")
             exit(1)
 
-    def set_tests(self, tests:str) -> None: # customize test
+    def set_tests(self, tests:list) -> None: # customize test
         self._tests = tests
     
     def __read_cases_files(self, _path:str):
@@ -161,21 +160,18 @@ class Test:
         p = subprocess.Popen([self._filePath, _data["path"]], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         try:
             for i, item in enumerate(_data["input"]):
-                p.stdin.write((item + '\n').encode())
+                p.stdin.write((item.strip() + '\n').encode())
             # os.system(f"echo {''.join(_data['input'])} | {self._filePath} {_data['path']} > /dev/null")
 
             try:
                 _stdout, _ = p.communicate(timeout=1)
+                # print(_stdout.decode())
             except subprocess.TimeoutExpired as err:
                 if self._WarnOut:
                     self.__print_warn_info(self, f"Running warn:{err}")
-            # p.stdin.flush()
-            # p.stdout.flush()
-            # p.stdin.close()
-            # p.stdout.close()
-            # print(_stdout.decode())
-            p.terminate()
-            p.wait()
+
+            p.stdin.close()
+            p.stdout.close()
             time.sleep(0.1)
             _dump_out = ""
             try:
@@ -220,8 +216,8 @@ class Test:
 
 
 class NormalTest(Test):
-    def __init__(self, filePath:str, testName:str="", testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None) -> None:
-        super().__init__(filePath, testName, testNum, hasIllegal, ErrorRate, TestCasePath, DoneFunc)
+    def __init__(self, filePath:str, testName:str="", testNum:int = 0, hasIllegal:bool = False, ErrorRate:float = 0.05, TestCasePath:str = "", DoneFunc=None, WarnOut:bool=False) -> None:
+        super().__init__(filePath, testName, testNum, hasIllegal, ErrorRate, TestCasePath, DoneFunc, False)
         self.__default_tests()
         if not hasIllegal:
             self._weights = [1, 0]
@@ -238,12 +234,12 @@ def SingleCommandTest(program_path:str, case_path:str, DoneFunc = None) -> list[
     _path = f"{case_path}/SingleCommand/"
     test_content = {"dump": "TestDump", "init": "TestInit", "set": "TestSet", "step": "TestStep", }
     for key, value in test_content.items():
-        test_content[key] = NormalTest(filePath=program_path, testName=value, TestCasePath=_path + key, DoneFunc=DoneFunc)
+        test_content[key] = NormalTest(filePath=program_path, testName=value, TestCasePath=_path + key, DoneFunc=DoneFunc, WarnOut=True)
         test_content[key].read_test_case()
 
     total, success = 0, 0
     for key, value in test_content.items():
-        value.create_test_tasks(parallel=True, concise=True, printPath=True)
+        value.create_test_tasks(parallel=True, concise=False, printPath=True)
         _total, _success = value._testNum, value._successNum
         total += _total
         success += _success
@@ -256,8 +252,44 @@ def MultiCommandTest(program_path:str, case_path:str, DoneFunc = None) -> list[i
     print(f"{Fore.LIGHTCYAN_EX}Running multiple command test...{Fore.RESET}")
     _path = f"{case_path}/MultiCommand/"
     test_content = {
-        "item": "TestItem", "broke": "TestBroke", "hospital": "TestHospital", "buff": "TestBuff", "gifthouse": "TestGiftHouse",
-        "house": "TestHouse", "magicroom": "TestMagicRoom", "mine": "TestMine", "pointstore": "TestPointStore", "prison": "TestPrison",
+        "item": "TestItem", "broke": "TestBroke", "buff": "TestBuff", "gifthouse": "TestGiftHouse",
+        "house": "TestHouse", "mine": "TestMine", "god": "TestGod", 
+    }
+
+    for key, value in test_content.items():
+        test_content[key] = NormalTest(filePath=program_path, testName=value, TestCasePath=_path + key, DoneFunc=DoneFunc, WarnOut=True)
+        test_content[key].read_test_case()
+
+    total, success = 0, 0
+    for key, value in test_content.items():
+        value.create_test_tasks(parallel=True, concise=False, printPath=True)
+        _total, _success = value._testNum, value._successNum
+        total += _total
+        success += _success
+
+    print(f"{Fore.LIGHTCYAN_EX}Finished.{Fore.RESET}")
+    return total, success
+
+
+def OtherTest(program_path:str, case_path:str, DoneFunc = None) -> list[int, int]:
+    print(f"{Fore.LIGHTCYAN_EX}Running other test...{Fore.RESET}")
+    _path = f"{case_path}/Other/"
+
+    other_test = NormalTest(filePath=program_path, testName="TestOther", TestCasePath=_path, DoneFunc=DoneFunc, WarnOut=True)
+    other_test.read_test_case()
+
+    other_test.create_test_tasks(parallel=True, concise=False, printPath=True)
+    total, success = other_test._testNum, other_test._successNum
+
+    print(f"{Fore.LIGHTCYAN_EX}Finished.{Fore.RESET}")
+    return total, success
+
+
+def ExchangeTest(program_path:str, case_path:str, DoneFunc = None) -> list[int, int]:
+    print(f"{Fore.LIGHTCYAN_EX}Running Exchange test...{Fore.RESET}")
+    _path = f"{case_path}/"
+    test_content = {
+        "G4": "Gruop4", 
     }
 
     for key, value in test_content.items():
@@ -266,7 +298,7 @@ def MultiCommandTest(program_path:str, case_path:str, DoneFunc = None) -> list[i
 
     total, success = 0, 0
     for key, value in test_content.items():
-        value.create_test_tasks(parallel=True, concise=True, printPath=True)
+        value.create_test_tasks(parallel=True, concise=False, printPath=True)
         _total, _success = value._testNum, value._successNum
         total += _total
         success += _success
@@ -274,18 +306,20 @@ def MultiCommandTest(program_path:str, case_path:str, DoneFunc = None) -> list[i
     print(f"{Fore.LIGHTCYAN_EX}Finished.{Fore.RESET}")
     return total, success
 
-def OtherTest(program_path:str, case_path:str, DoneFunc = None) -> list[int, int]:
-    print(f"{Fore.LIGHTCYAN_EX}Running other test...{Fore.RESET}")
-    _path = f"{case_path}/Other/"
 
-    other_test = NormalTest(filePath=program_path, testName="TestOther", TestCasePath=_path, DoneFunc=DoneFunc)
-    other_test.read_test_case()
+def test():
+    a = NormalTest(filePath="../bin/richman", testName="Test")
+    a.set_tests([
+            {
+                "path":"./a.out",
+                "input":["1000", "1234", "set point Q 200", "step 28", "1", "2", "F", "dump", "quit"],
+                "expected_output": "1",
+                "output":""
+            }
+         ]
+    )
+    a.create_test_tasks()
 
-    other_test.create_test_tasks(parallel=True, concise=True, printPath=True)
-    total, success = other_test._testNum, other_test._successNum
-
-    print(f"{Fore.LIGHTCYAN_EX}Finished.{Fore.RESET}")
-    return total, success
 
 def main():
     if platform.system() == "Windows":
@@ -301,16 +335,16 @@ def main():
 
     os.system(f"cp -r ./{case_path}/TestCase_Print {program_path.replace('richman', '')}")
     total, success = 0, 0
-    with alive_bar(total=79, title="total progress") as bar:
+    with alive_bar(total=91, title="total progress") as bar:
         _total, _success = SingleCommandTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
         total += _total
         success += _success
         _total, _success = MultiCommandTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
         total += _total
         success += _success
-        # _total, _success = OtherTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
-        # total += _total
-        # success += _success
+        _total, _success = OtherTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
+        total += _total
+        success += _success
     
     print(f"[{Fore.BLUE}Result{Fore.RESET}]"
           f"{Fore.LIGHTCYAN_EX}Total:{total}{Fore.RESET}, "
@@ -319,4 +353,5 @@ def main():
     
 
 if __name__ == '__main__':
+    # test()
     main()

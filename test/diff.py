@@ -8,9 +8,9 @@ def compare_files(file1, file2):
     output = ''
     for char1, char2 in zip(text1, text2):
         if repr(char1) != repr(char2):
-            output += '\033[91m' + repr(char2) + '\033[0m'
+            output += '\033[91m' + char2 + '\033[0m'
         else:
-            output += repr(char2)
+            output += char2
     
     return output
 
