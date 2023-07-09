@@ -6,9 +6,9 @@
 
 
 // 特殊事件所在地块编号
-#define HOSPITAL (14)
-#define PRISON (49)
-#define MAGICROOM (63)
+#define PARK1 (14)
+#define PARK2 (49)
+//#define MAGICROOM (63)
 #define GIFTROOM (35)
 #define TOOLROOM (28)
 

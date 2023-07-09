@@ -9,6 +9,7 @@
 #include"Player.h"
 extern int prid;
 extern Player players[MAX_PLAYER_NUM];
+extern int BuffLoc;
 mapnode map[MAX_MAP_NUM];
 int initMap()
 {
@@ -29,18 +30,18 @@ int initMap()
         else if(i==35) price=300;
         map[i].price=price;
     }
-    map[HOSPITAL].ch='H';
-    map[HOSPITAL].price=-1;
+    map[PARK1].ch='P';
+    map[PARK1].price=-1;
     map[TOOLROOM].ch='T';
     map[TOOLROOM].price=-1;
     map[GIFTROOM].ch='G';
     map[GIFTROOM].price=-1;
-    map[PRISON].ch='P';
-    map[PRISON].price=-1;
-    map[MAGICROOM].ch='M';
-    map[MAGICROOM].price=-1;
+    map[PARK2].ch='P';
+    map[PARK2].price=-1;
+    //map[MAGICROOM].ch='M';
+    //map[MAGICROOM].price=-1;
     map[0].ch='S';
-    for(int i=MAGICROOM+1;i<MAX_MAP_NUM;i++)
+    for(int i=64;i<MAX_MAP_NUM;i++)
     {
         map[i].ch='$';
         map[i].price=-1;
@@ -140,17 +141,15 @@ int updateMapNode(int index)//更新对应节点的显示字符和颜色
     map[index].color=0;
     if(index==0)
         map[index].ch='S';
-    else if(index==HOSPITAL)
-        map[index].ch='H';
-    else if(index==PRISON)
+    else if(index==PARK1)
+        map[index].ch='P';
+    else if(index==PARK2)
         map[index].ch='P';
     else if(index==TOOLROOM)
         map[index].ch='T';
     else if(index==GIFTROOM)
         map[index].ch='G';
-    else if(index==MAGICROOM)
-        map[index].ch='M';
-    else if(index>MAGICROOM)
+    else if(index>63)
         map[index].ch='$';
     else 
         map[index].ch='0';
@@ -161,14 +160,15 @@ int updateMapNode(int index)//更新对应节点的显示字符和颜色
         map[index].color=getcolor(getPlayerch(map[index].whose));
     }
     //有没有道具
+    if(BuffLoc==index)
+    {
+        map[index].ch='F';
+    }
     if(map[index].item[1])
     {
         map[index].ch='#';
     }
-    if(map[index].item[3])
-    {
-        map[index].ch='@';
-    }
+    
     //有没有玩家，最后的玩家显示
     if(map[index].user[0]&&map[index].user[0]!='\0')
     {

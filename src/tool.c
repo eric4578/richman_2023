@@ -6,7 +6,8 @@ int buyTool(Player* player)
     char ch=' ';
     char input[100];
     //fgets(input, sizeof(input), stdin);
-    printf("欢迎来到道具屋，请选择你需要的道具:");
+    printf("欢迎来到道具屋，请选择你需要的道具:\n");
+    printf("1，路障；2.机器娃娃\n");
     while (ch!='F'&&ch!='f')
     {
         /*可以购买多个的代码*/
@@ -49,11 +50,6 @@ void buy_one_tool(Player*player,char ch)
         if(player->points>=30) buyRobot(player);
         else printf("点数不足，购买失败\n");
     }
-    else if(ch=='3')
-    {
-        if(player->points>=50) buyBomb(player);
-        else printf("点数不足，购买失败\n");
-    }
     else if(ch=='F'||ch=='f') return ;
     else printf("非法字符\n");
 }
@@ -86,8 +82,8 @@ int solve_Bomb(Player*player,int index)
 {
     map[index].item[3]=0;//记得换成宏
     // player->loc=HOSPITAL;
-    player->stop=3;
-    return 3;
+    player->stop=0;
+    return 0;
 }
 int solve_Block(Player*player,int index)
 {

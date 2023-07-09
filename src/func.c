@@ -3,6 +3,7 @@
 #include "map.h"
 #include "global.h"
 #include<string.h>
+extern int BuffLoc;
 extern mapnode map[MAX_MAP_NUM];
 extern Player players[MAX_PLAYER_NUM];
 
@@ -140,7 +141,7 @@ int query(Player * player) {
     printf("道具：\n");
     printf("\t路障: %d\n", player->toolnum[1]);
     printf("\t机器娃娃: %d\n", player->toolnum[2]);
-    printf("\t炸弹: %d\n", player->toolnum[3]);
+    //printf("\t炸弹: %d\n", player->toolnum[3]);
     return 0;
 }
 
@@ -150,36 +151,37 @@ int query(Player * player) {
     return: 
 */
 int bomb(Player * player, int index) {
-    if(player->toolnum[3] == 0) {
-        printf("你并没有炸弹道具\n");
-        return 0;
-    }
-    if(index != 0 && index <= 10 && index >= -10) {
-        if(map[(player->loc + index + 70) % 70].item[3]==1)
-        {
-            printf("不能将炸弹放到有炸弹的位置\n");
-            return 0;
-        }
-        if((player->loc + index + 70) % 70 == HOSPITAL || (player->loc + index + 70) % 70 == PRISON) {
-            printf("不能将炸弹放到医院或者监狱\n");
-        }
-        else if(map[(player->loc + index + 70) % 70].user[0] == 'Q' || 
-                map[(player->loc + index + 70) % 70].user[0] == 'A' ||
-                map[(player->loc + index + 70) % 70].user[0] == 'S' ||
-                map[(player->loc + index + 70) % 70].user[0] == 'J') {
-            printf("不能将炸弹放到玩家脚下\n");
-        }
-        //正常
-        else {
-            map[(player->loc + index + 70) % 70].item[3] = 1;
-            player->toolnum[3]--;
-            player->toolnum[0]--;
-            updateMapNode((player->loc + index + 70) % 70);
-        }
-    }
-    else{
-        printf("不能放在大于或者小于10的地方或者自己脚下\n");
-    }
+    // if(player->toolnum[3] == 0) {
+    //     printf("你并没有炸弹道具\n");
+    //     return 0;
+    // }
+    // if(index != 0 && index <= 10 && index >= -10) {
+    //     if(map[(player->loc + index + 70) % 70].item[3]==1)
+    //     {
+    //         printf("不能将炸弹放到有炸弹的位置\n");
+    //         return 0;
+    //     }
+    //     if((player->loc + index + 70) % 70 == HOSPITAL || (player->loc + index + 70) % 70 == PRISON) {
+    //         printf("不能将炸弹放到医院或者监狱\n");
+    //     }
+    //     else if(map[(player->loc + index + 70) % 70].user[0] == 'Q' || 
+    //             map[(player->loc + index + 70) % 70].user[0] == 'A' ||
+    //             map[(player->loc + index + 70) % 70].user[0] == 'S' ||
+    //             map[(player->loc + index + 70) % 70].user[0] == 'J') {
+    //         printf("不能将炸弹放到玩家脚下\n");
+    //     }
+    //     //正常
+    //     else {
+    //         map[(player->loc + index + 70) % 70].item[3] = 1;
+    //         player->toolnum[3]--;
+    //         player->toolnum[0]--;
+    //         updateMapNode((player->loc + index + 70) % 70);
+    //     }
+    // }
+    // else{
+    //     printf("不能放在大于或者小于10的地方或者自己脚下\n");
+    // }
+    // return 0;
     return 0;
 }
 
@@ -194,10 +196,12 @@ int block(Player * player, int index) {
             printf("不能将路障放到有路障的位置\n");
             return 0;
         }
-        
-        if((player->loc + index + 70) % 70 == HOSPITAL || (player->loc + index + 70) % 70 == PRISON) {
-            printf("不能将路障放到医院或者监狱\n");
+        else if(map[(player->loc + index + 70) % 70].item[1]==BuffLoc)
+        {
+            printf("不能将路障放到有财神buff的位置\n");
+            return 0;
         }
+        
         else if(map[(player->loc + index + 70) % 70].user[0] == 'Q' || 
                 map[(player->loc + index + 70) % 70].user[0] == 'A' ||
                 map[(player->loc + index + 70) % 70].user[0] == 'S' ||
@@ -232,4 +236,37 @@ int robot(Player * player) {
     player->toolnum[0]--;
     
     return 0;
+}
+
+/*
+    function: 判断财神生成的位置是否合法
+    parameter: 待判断财神的位置
+    return: 1非法，0合法
+*/
+int isInvalidBuff(int loc) {
+    for(int i = 0; i < MAX_PLAYER_NUM; i++) {
+        if(players[i].alive == 1 && loc == players[i].loc) 
+            return 1;
+    }
+    if(loc == GIFTROOM || loc == TOOLROOM)
+        return 1;
+    for(int i = 0; i < MAX_MAP_NUM; i++) {
+        if(map[i].item[0] > 0)
+            return 1;
+    }
+    return 0;
+}
+
+/*
+    function: 用于生成财神的位置
+    parameter: None
+    return: 返回财神的位置
+*/
+int randomBuffLoc() {
+    int loc = GIFTROOM;
+    while(isInvalidBuff(loc)) {
+        srand((unsigned)time(NULL));
+        loc = rand() % 70;
+    }
+    return loc;
 }

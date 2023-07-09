@@ -12,4 +12,6 @@ int block(Player * player, int index);
 int robot(Player * player);
 void help();
 void quit();
+int isInvalidBuff(int loc);
+int randomBuffLoc();
 #endif

@@ -8,7 +8,8 @@
 #include"func.h"
 extern mapnode map[MAX_MAP_NUM];
 extern Player players[MAX_PLAYER_NUM];
-
+extern int round;
+extern int BuffLoc;
 /*step函数*/
 int step(Player*player,int step)
 {
@@ -34,7 +35,7 @@ int step(Player*player,int step)
     }
     else if(flag==3) {
         printf("被炸，进医院\n");
-        step=HOSPITAL-(player->loc);//可以为负数
+        step=PARK1-(player->loc);//可以为负数
     }
     
     //更新旧节点的用户表
@@ -65,15 +66,15 @@ int step(Player*player,int step)
     }
     map[player->loc].user[0]=getPlayerch(player->id);
     //判断是否为监狱
-    if(player->loc==PRISON)
-    {
-        printf("进入监狱\n");
-        player->stop=2;
-    }
-    else if(player->loc==GIFTROOM)
+    // if(player->loc==PRISON)
+    // {
+    //     printf("进入监狱\n");
+    //     player->stop=2;
+    // }
+    if(player->loc==GIFTROOM)
     {
         printf("进入礼品屋\n");
-        printf("选择1.奖金2000元；2.点数卡200点；3.财神buff\n");
+        printf("选择1.奖金2000元；2.点数卡200点；\n");
         getGift(player);//todo
     }
     //是否为道具屋
@@ -81,11 +82,13 @@ int step(Player*player,int step)
     {
         buyTool(player);
     }
-    //是否为魔法屋
-    else if(player->loc==MAGICROOM)
+    //见到财神buff
+    else if(player->loc==BuffLoc)
     {
-        printf("进入魔法屋\n");
-        //useMagic(player);//TODO,magic room
+        round=0;
+        player->buff+=5;
+        BuffLoc=-1;
+        printf("得到财神buff\n");
     }
     //是否为矿地
     else if(player->loc<MAX_MAP_NUM&&player->loc>=(MAX_MAP_NUM-6))
@@ -219,11 +222,6 @@ int getGift(Player*player)
     {
         printf("选择点数卡,获得点数200点\n");
         player->points+=200;
-    }
-    else if(strcmp(buff,"3")==0)
-    {
-        printf("选择财神buff,获得buff5轮");
-        player->buff+=5;
     }
     else{
         printf("您错失了机会\n");

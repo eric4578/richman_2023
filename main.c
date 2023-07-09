@@ -10,6 +10,8 @@
 extern mapnode map[MAX_MAP_NUM];//地图
 Player players[MAX_PLAYER_NUM]; //玩家
 int prid;
+int BuffLoc;
+int round;
 int main(int argc,char*argv[]) {
     /*游戏初始化*/
     initMap();
@@ -17,6 +19,7 @@ int main(int argc,char*argv[]) {
     start(players);
     int round=0;//游戏回合数，
     prid=0;//记录当前玩家的id,是0到PlayerNumber-1之间的整数,初始置0
+    BuffLoc=-1;
     int PlayerNumber=getPlayerNumber();//玩家数目
     int i=0,j=0;
     for(i=0;i<PlayerNumber;i++)
@@ -36,7 +39,6 @@ int main(int argc,char*argv[]) {
 
     while (1) {
         /*回合数更新*/
-        if(prid==0) round+=1;
         if(players[prid].alive!=1){//死亡跳过
             prid=(prid+1)%PlayerNumber;
             continue;
@@ -117,13 +119,14 @@ int main(int argc,char*argv[]) {
                 printf("剩余buff:%d\n", (players+prid)->buff);
             }
             prid=(prid+1)%PlayerNumber;
+            if(prid==0) round+=1;
             /*更新角色状态*/
-            while(players[prid].stop>0){
-                updatePlayer(players+prid);
-                prid=(prid+1)%PlayerNumber;
-                continue;
-            }
-            updatePlayer(players+prid);//进行buff，stop的更新
+            // while(players[prid].stop>0){
+            //     updatePlayer(players+prid);
+            //     prid=(prid+1)%PlayerNumber;
+            //     continue;
+            // }
+            //updatePlayer(players+prid);//进行buff，stop的更新
                 continue;
         }
 
@@ -133,14 +136,31 @@ int main(int argc,char*argv[]) {
             int rollNumber=get_roll_number();
             printf("你掷得的点数为%d\n", rollNumber);
             step((players+prid),rollNumber);
-            prid=(prid+1)%PlayerNumber;
-            /*更新角色状态*/
-            if(players[prid].stop>0){
-                updatePlayer(players+prid);
-                prid=(prid+1)%PlayerNumber;
-                continue;
+            if((players+prid)->buff>0)
+            {
+                (players+prid)->buff-=1;
+                printUser((players+prid));
+                printf("剩余buff:%d\n", (players+prid)->buff);
             }
-            updatePlayer(players+prid);//进行buff，stop的更新
+            prid=(prid+1)%PlayerNumber;
+            if(prid==0) {
+                round+=1;
+                if(round==10)
+                {
+                    
+                    BuffLoc=randomBuffLoc();
+                    printf("财神降临到了%d的位置\n",BuffLoc);
+                    updateMapNode(BuffLoc);
+                }
+            }
+            
+            /*更新角色状态*/
+            // if(players[prid].stop>0){
+            //     updatePlayer(players+prid);
+            //     prid=(prid+1)%PlayerNumber;
+            //     continue;
+            // }
+            //updatePlayer(players+prid);//进行buff，stop的更新
             //清空缓冲区
             // char input[20];
             // fgets(input, sizeof(input), stdin);  
@@ -161,10 +181,10 @@ int main(int argc,char*argv[]) {
         {
             robot(players+prid);
         }
-        else if (strcmp(action, "bomb") == 0)
-        {
-            bomb(players+prid, atoi(arg1));
-        }
+        // else if (strcmp(action, "bomb") == 0)
+        // {
+        //     bomb(players+prid, atoi(arg1));
+        // }
         else if(strcmp(action, "query") == 0)
         {
             // printf("总财产%d\n",query(players+prid));

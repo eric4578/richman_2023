@@ -8,7 +8,6 @@ Player* changePlayer(Player*Player);
 int get_roll_number();
 int putBlock(Player*player,int num);
 int robotClear(Player*player);
-int putBomb(Player*player,int num);
 int payRent(int from,int to);
 int updatePlayer(Player*player);
 int getGift(Player*player);
