@@ -335,7 +335,7 @@ def main():
 
     os.system(f"cp -r ./{case_path}/TestCase_Print {program_path.replace('richman', '')}")
     total, success = 0, 0
-    with alive_bar(total=91, title="total progress") as bar:
+    with alive_bar(total=100, title="total progress") as bar:
         _total, _success = SingleCommandTest(program_path=program_path, case_path=case_path, DoneFunc=bar)
         total += _total
         success += _success
